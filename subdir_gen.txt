@@ -1,0 +1,63 @@
+# this is a script to read files over subdirectories and make something of them
+#goals: 
+# 1) read all the files in one shot *achieved*
+# 2) average all the population abundances over 2000 time steps *achieved*
+# 3) calculate the standard error (optional)
+# 4) plot the average values *achieved*
+
+setwd("C:/Users/Alberto/Documents/Rdirectory/Thesis/hype")
+library(abind)
+library(reshape)
+library(ggplot2)
+list<-list.files("C:/Users/Alberto/Documents/Rdirectory/Thesis/hype", 
+                 recursive=TRUE, pattern="*.csv") #the key is the recursive argument
+length.list<-length(list)
+read.special<-function(x) {
+  read.table(x, header=TRUE, sep='\t') # custom function to read the batches of .csv keeping the header
+}
+df<-lapply(list, read.special) # all the data in a huge list of data
+matcol<-list() # empty list for the loop
+for (i in c(1:length.list)) {
+  matcol[[i]]<-df[[i]][,c(1,3,4,5)] # list of matrix containing data of interest: time, prey, pred and toca for each .csv
+}
+listVec <- lapply(matcol, c, recursive=TRUE) #temporary solution, create a list of vectors
+sequence <- do.call(cbind, listVec) #binds the vectors in the order: time,prey,pred,toca (7 columns)
+meanall<-rowMeans(sequence) #average over the 7 elements of each row
+means<-data.frame(meanall[c(1:2000)], # transform the whole thing into a df, fuzzy
+                  meanall[c(2001:4000)],
+                  meanall[c(4001:6000)],
+                  meanall[c(6001:8000)])
+colnames(means)<-c("Time","Preys","Predators","Topcarnivores")
+mu<-melt(means, id.vars="Time") # melt the df to plot it
+normal_scientific<-expression(0,10,10^2,10^3,10^4,10^5,10^6,10^7) # just a notation to be used in the plot
+p<-ggplot(subset(mu, variable=="Preys" | variable=="Predators" | variable== "Topcarnivores"),
+          aes(x=Time,y=value, linetype=variable))+
+  geom_line()+ 
+  labs(title = "Populations of preys,\npredators and top carnivores", 
+       x="Time steps", 
+       y="Abundance")+
+  scale_linetype_manual(values=c(1:3))+
+  scale_x_discrete("Time steps", breaks=seq(0,2000,by=250), expand=c(0,0)) +
+  scale_y_continuous(name="Total number of individuals", 
+                     limits=c(1,5000000),
+                     breaks=c(0,10,100,1000,10000,100000,1000000,10000000), 
+                     expand=c(0,0), labels=normal_scientific)+
+  coord_trans(y="log10")+
+  theme(panel.background = element_rect(fill = 'white'))+
+  #theme
+  theme_bw()+
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())+
+  theme(plot.title = element_text(size=16, vjust=2))+
+  theme(axis.title.x = element_text(size=14,vjust=-0.5),
+        axis.title.y = element_text(size=14,vjust=0.5))+
+  theme(legend.title = element_text(size=14))+
+  theme(axis.text.x=element_text(size=14))+
+  theme(axis.text.y=element_text(size=14))
+p
+
+# it seems to be working fine. I should take some time and build some directories with
+# comparable simulations and see if everything works out ok. the goal is anyway to
+# end up as soon as possible with a single dataframe that contains the metrics of
+# interest and allows to plot everything. to achieve this, it's necessary to work
+# with repeated loops and functions of the apply family.it's not that fancy once you
+# got the grasp on it.
