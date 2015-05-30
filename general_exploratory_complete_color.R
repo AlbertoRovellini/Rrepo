@@ -6,8 +6,8 @@
 library(ggplot2)
 library(scales)
 library(reshape2)
-setwd("C:/Users/Alberto/Documents/MASTER THESIS/prototype/spectrum")
-data <- read.csv("working_tot.csv", header=T, sep="\t", dec=",")
+setwd("C:/Users/Alberto/Documents/MASTER THESIS/prototype/out")
+data <- read.csv("start_total.21.csv", header=T, sep="\t", dec=",")
 data <- data[,c(1,4,6,8,10,12,14,16,18,20)]
 normal_scientific<-expression(0,10,10^2,10^3,10^4)
 colnames(data)<-c("Time","smallpelagic","mediumpelagic","largepelagic","smalldemersal","mediumdemersal", 
@@ -15,7 +15,7 @@ colnames(data)<-c("Time","smallpelagic","mediumpelagic","largepelagic","smalldem
 data <- melt(data, id.vars="Time")
 p<-ggplot(subset(data, variable=="smallpelagic" | variable=="mediumpelagic" | 
                          variable== "largepelagic" | variable== "smalldemersal" | variable== "mediumdemersal" | 
-                         variable== "largedemersal" | variable== "mediumgrazers" | variable== "largegrazers" | 
+                         variable== "largedemersal" | variable== "mediumgrazer" | variable== "largegrazer" | 
                          variable== "topcarnivores"), aes(x=Time, y=value, colour=variable))+
         geom_line()+ 
         labs(title = "Populations", 
@@ -23,7 +23,7 @@ p<-ggplot(subset(data, variable=="smallpelagic" | variable=="mediumpelagic" |
              y="Abundance")+
         scale_color_manual(values=c("blue","red", "green","yellow","orange", "grey", "magenta", "black", "grey"), 
                            name="Populations")+
-        scale_x_discrete("Time steps", breaks=seq(0,2000,by=250), expand=c(0,0)) +
+        scale_x_discrete("Time steps (weeks)", breaks=seq(0,2000,by=250), expand=c(0,0)) +
         scale_y_continuous(name="Total number of individuals", 
                            limits=c(1,50000),
                            breaks=c(0,10,100,1000,10000), 

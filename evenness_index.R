@@ -4,12 +4,12 @@
 # then, sum the squares of all ps
 # then calculate id
 
-setwd("C:/Users/Alberto/Documents/MASTER THESIS/prototype")
-data <- read.csv("start_total.prototype.txt", header=T, sep="\t")
+setwd("C:/Users/Alberto/Documents/MASTER THESIS/prototype/out/total")
+data <- read.csv("start_total.02.csv", header=T, sep="\t", dec=',')
 #data <- data[,c(1:ncol(data)-1)] # workaround, removes the last column which is an error. hopefully won't need it
 last <- data[nrow(data),] # extracts the last row
-last1 <- last[3:length(last)] # get rid of the first two values (time and total)
-empty <- numeric(length(last)-2) # initiates the empty vector for the loop
+last1 <- last[seq(4, 20, 2)] # get rid of the first two values (time and total)
+empty <- numeric(length(last1)) # initiates the empty vector for the loop
 for (i in 1:length(empty)) { # loop to calculate ps for each class of agents
         empty[i] <- last1[i]/last[2] # in 2nd position is the total number
 }

@@ -33,29 +33,30 @@ colnames(sd_all)<-c("Time","smallpelagicSD","mediumpelagicSD","largepelagicSD","
                     "mediumgrazerSD","largegrazerSD","topcarnivoresSD") # for sd as well
 mean_all<-as.data.frame(mean_all) # turns the matrix into a data frame
 sd_all<-as.data.frame(sd_all) # same
-mean_all <- mean_all + 1 # workaround for the log scale (either this or NAs, no big difference)
-
-# mapping of the limits for the errorbar plot, each mean +- its sd. one entry per class is necessary
-limits1<-aes(ymax=mean_all$smallpelagic+sd_all$smallpelagicSD, ymin=mean_all$smallpelagic) #-sd_all$smallpelagicSD)
-limits2<-aes(ymax=mean_all$mediumpelagic+sd_all$mediumpelagicSD, ymin=mean_all$mediumpelagic) #-sd_all$mediumpelagicSD)
-limits3<-aes(ymax=mean_all$largepelagic+sd_all$largepelagicSD, ymin=mean_all$largepelagic) #-sd_all$largepelagicSD)
-limits4<-aes(ymax=mean_all$smalldemersal+sd_all$smalldemersalSD, ymin=mean_all$smalldemersal) #-sd_all$smalldemersalSD)
-limits5<-aes(ymax=mean_all$mediumdemersal+sd_all$mediumdemersalSD, ymin=mean_all$mediumdemersal) #-sd_all$mediumdemersalSD)
-limits6<-aes(ymax=mean_all$largedemersal+sd_all$largedemersalSD, ymin=mean_all$largedemersal) #-sd_all$largedemersalSD)
-limits7<-aes(ymax=mean_all$mediumgrazer+sd_all$mediumgrazerSD, ymin=mean_all$mediumgrazer) #-sd_all$mediumgrazerSD)
-limits8<-aes(ymax=mean_all$largegrazer+sd_all$largegrazerSD, ymin=mean_all$largegrazer) #-sd_all$largegrazerSD)
-limits9<-aes(ymax=mean_all$topcarnivores+sd_all$topcarnivoresSD, ymin=mean_all$topcarnivores) #-sd_all$topcarnivoresSD)
+mean_all[,c(2:length(mean_all))] <- mean_all[,c(2:length(mean_all))] + 1 # workaround for the log scale (either this or NAs, no big difference)
 
 comb <- merge(mean_all, sd_all, "Time") # one df with all the means and sd (necessary for the mapping of the plot)
 
-mcomb <- melt(comb, id.vars="Time") # melt the dataset for ggplot
+# mapping of the limits for the errorbar plot, each mean +- its sd. one entry per class is necessary
+limits1<-aes(ymax=comb$smallpelagic+comb$smallpelagicSD, ymin=comb$smallpelagic) #-comb$smallpelagicSD)
+limits2<-aes(ymax=comb$mediumpelagic+comb$mediumpelagicSD, ymin=comb$mediumpelagic) #-comb$mediumpelagicSD)
+limits3<-aes(ymax=comb$largepelagic+comb$largepelagicSD, ymin=comb$largepelagic) #-comb$largepelagicSD)
+limits4<-aes(ymax=comb$smalldemersal+comb$smalldemersalSD, ymin=comb$smalldemersal) #-comb$smalldemersalSD)
+limits5<-aes(ymax=comb$mediumdemersal+comb$mediumdemersalSD, ymin=comb$mediumdemersal) #-comb$mediumdemersalSD)
+limits6<-aes(ymax=comb$largedemersal+comb$largedemersalSD, ymin=comb$largedemersal) #-comb$largedemersalSD)
+limits7<-aes(ymax=comb$mediumgrazer+comb$mediumgrazerSD, ymin=comb$mediumgrazer) #-comb$mediumgrazerSD)
+limits8<-aes(ymax=comb$largegrazer+comb$largegrazerSD, ymin=comb$largegrazer) #-comb$largegrazerSD)
+limits9<-aes(ymax=comb$topcarnivores+comb$topcarnivoresSD, ymin=comb$topcarnivores) #-comb$topcarnivoresSD)
+
+mcomb <- melt(comb, id.vars="Time",variable.name= "variable", 
+              value.name="value") # melt the dataset for ggplot
 
 normal_scientific<-expression(0,10,10^2,10^3,10^4,10^5) # notation to be used in the plot
 
 # plotting code
 gplot <-ggplot(subset(mcomb, variable=="smallpelagic" | variable=="mediumpelagic" | 
                               variable== "largepelagic" | variable== "smalldemersal" | variable== "mediumdemersal" | 
-                              variable== "largedemersal" | variable== "mediumgrazers" | variable== "largegrazers" | 
+                              variable== "largedemersal" | variable== "mediumgrazer" | variable== "largegrazer" | 
                               variable== "topcarnivores"),
           aes(x=Time,y=value, group=variable))+
         geom_line(aes(linetype=variable))+ 
@@ -94,6 +95,6 @@ gplot <-ggplot(subset(mcomb, variable=="smallpelagic" | variable=="mediumpelagic
 gplot
 ggsave("populations.pdf") # set better res pls
 
-# limits still fail, need to fix, first move to other scripts and make them functional
+# ready with limits and all the shit. never seen an uglier plot though.
 
 

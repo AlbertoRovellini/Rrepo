@@ -8,6 +8,10 @@
 # length class of the abundance of individuals in that class over all the runs. finally, it plots the
 # spectrum as scatterplot, and it is supposed to fit the calculated line to it (is it even legit?)
 
+# 29/05/2015 code can be more compact and more efficient. one function would be enough.
+# however, does the job. fitted model is still linear (and probably not even legit, as the whole
+# averaging procedure)
+
 
 setwd("C:/Users/Alberto/Documents/MASTER THESIS/prototype/out/individual")
 list<-list.files("C:/Users/Alberto/Documents/MASTER THESIS/prototype/out/individual", 
@@ -21,28 +25,42 @@ data_list <- lapply(list, read.special)
 size_spectrum <- function(data) { # function to build and analyze the size spectrum of the community
         mass <- data$biomass # isolates the column with biomass. infact, no need to factorize if the spectrum is for the whole
         # community, which still has to be defined anyway
-        breaks <- seq(0, ceiling(max(mass)), 5) # sets the breaks ranging over the biomass of the individuals
+        breaks <- seq(0, ceiling(max(mass))+10, 5) # sets the breaks ranging over the biomass of the individuals
         length_classes <- breaks[2:length(breaks)] # workaround, not sure if legit yet
         cat <- cut(mass, breaks, labels=length_classes, include.lowest=TRUE) 
         freq <- table(cat)
         freq <- cbind(freq)
         freq[freq==0] <- NA # turn zeroes to NAs for the sake of the plot
+        freq[freq<3] <- NA # lower limit of resoulution, gets rid of the outliers. kek
         fit <- lm(formula = length_classes ~ freq) # fits linear model
         slope <- coef(fit)["freq"] # extracts the slope
         intercept <- coef(fit)["(Intercept)"] # extracts the intercept
         values <- data.frame(slope, intercept) # stores slope and intercept from one run in a data frame
+        log_freq <- log(freq) # lognorm transformation of the frequency data
+        log_length <- log(length_classes) # lognormal transformation of the length classes
+        log_freq_breaks <- data.frame(log_length, log_freq)
+        log_fit <- lm(log_freq~log_length) # linear regression to the logdata
+        log_slope <- coef(log_fit)["log_length"] # extracts the slope of the lognormal series
+        log_intercept <- coef(log_fit)["(Intercept)"] # extracts the intercept of the lognormal series
+        log_values <- data.frame(log_slope, log_intercept)
+        log_values
         #return(freq)
 
 }
 frequencies <-function(data) { # function to extract the frequencies for each replicate
         mass <- data$biomass # isolates the column with biomass. infact, no need to factorize if the spectrum is for the whole
         # community, which still has to be defined anyway
-        breaks <- seq(0, ceiling(max(mass)), 5) # sets the breaks ranging over the biomass of the individuals
+        breaks <- seq(0, ceiling(max(mass))+10, 5) # sets the breaks ranging over the biomass of the individuals
         length_classes <- breaks[2:length(breaks)] # workaround, not sure if legit yet
         cat <- cut(mass, breaks, labels=length_classes, include.lowest=TRUE) 
         freq <- table(cat)
         freq <- cbind(freq)
-        freq_breaks <- data.frame(length_classes, freq)
+        freq[freq==0] <- NA # turn zeroes to NAs for the sake of the plot
+        freq[freq<3] <- NA # lower limit of resoulution, gets rid of the outliers. kek
+        ln_freq <- log(freq) # lognorm transformation of the frequency data
+        ln_length <- log(length_classes) # lognormal transformation of the length classes
+        freq_breaks <- data.frame(ln_length, ln_freq)
+        
 }
 
 spectrum_metrics <- lapply(data_list, size_spectrum) # applies the function to all the element of the data list (i.e. to each run)
@@ -63,7 +81,9 @@ colnames(population_intercept) <- c("Mean intercept", "Standard deviation interc
 population_slope
 population_intercept # prints the results 
 
-freqs <- lapply(data_list, frequencies) # so far so good
+# plotter region
+
+freqs <- lapply(data_list, frequencies) 
 listbreaks<-numeric(length=length(freqs))
 for (i in 1:length(freqs)) {
         listbreaks[i]<-length(freqs[[i]][,1]) 
@@ -78,11 +98,8 @@ runs <- data.frame(matrix(unlist(runs), nrow=length(runs[[1]]), byrow=F),strings
 mean_runs <- apply(runs, 1, mean)
 ensemble <- data.frame(freqs[[maxlength]][,1], runs, mean_runs) # data frame containing all the runs and the largest 
 # breaks sequence. shorter lines filled with zeros. now need average and plot and fit of the lm
-plot(ensemble[,1], ensemble[,2], pch=16, cex=0.6, log="xy", main="Community size spectrum",
-     xlab="Length class", ylab="Abundance (x1000 individuals)")
+plot(ensemble[,1], ensemble[,2], pch=16, cex=0.6, main="Community size spectrum",
+     xlab="ln(5 g Length class)", ylab="ln(Abundance x 1000 individuals)")
+abline(b=population_slope[,1], a=population_intercept[,1]) # linear model with mean slope and intercept
 
-# maybe should be done with ggplot to look a bit less horrible
-
-
-
-
+# saver is still missing, dang
