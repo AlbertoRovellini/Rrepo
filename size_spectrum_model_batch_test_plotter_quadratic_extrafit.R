@@ -14,15 +14,18 @@
 
 # 03/06/2015 correction of a syntax error in the lm formula 
 
-
-setwd("C:/Users/Alberto/Documents/MASTER THESIS/prototype/out/individual")
-list<-list.files("C:/Users/Alberto/Documents/MASTER THESIS/prototype/out/individual", 
+library(ggplot2)
+setwd("C:/Users/Alberto/Documents/MASTER THESIS/prototype/out/individualPostHurricane")
+list<-list.files("C:/Users/Alberto/Documents/MASTER THESIS/prototype/out/individualPostHurricane", 
                  recursive=TRUE, pattern="*.csv") 
 length.list<-length(list)
 read.special<-function(x) {
         read.table(x, header=TRUE, sep='\t', dec=',') # custom function to read the batches of .csv keeping the header
 }
 data_list <- lapply(list, read.special)
+lastTimeStep <- function(data) subset(data, data$time=="2000.0") # isolates the last time step, comment out for complete analysis
+data_list <- lapply(data_list, lastTimeStep)
+
 
 size_spectrum <- function(data) { # function to build and analyze the size spectrum of the community
         mass <- data$biomass # isolates the column with biomass. infact, no need to factorize if the spectrum is for the whole

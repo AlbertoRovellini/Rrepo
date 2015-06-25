@@ -5,10 +5,10 @@
 # one data frame with two entries, the slope and the intercept of the linear model used to fit the data.
 # now including the option to perform lognormal transformation and regression
 
-setwd("C:/Users/Alberto/Documents/itn_jar/out")
+setwd("C:/Users/Alberto/Desktop/itn_jar/out")
 library(ggplot2)
-data <- read.csv("start_individual.csv", header=TRUE, sep="\t", dec=",")
-data <- subset(data, data$time==2000) # isolates the last time step, comment out for complete analysis
+data <- read.csv("start_individual.10.csv", header=TRUE, sep="\t", dec=",") 
+data <- subset(data, data$time=="2000.0") # isolates the last time step, comment out for complete analysis
 mass <- data$biomass # isolates the column with biomass. infact, no need to factorize if the spectrum is for the whole
 # community, which still has to be defined anyway
 breaks <- seq(0, ceiling(max(mass))+10, 5) # sets the breaks ranging over the biomass of the individuals
@@ -68,5 +68,5 @@ gplot <- ggplot(df, aes(x=ln_length, y=freq))+
        
 gplot
 
-ggsave("weight_spectrum_single.pdf", gplot, useDingbats=FALSE)
+#ggsave("weight_spectrum_single.pdf", gplot, useDingbats=FALSE)
 

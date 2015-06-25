@@ -36,7 +36,7 @@ p<-ggplot(subset(meltAll, variable=="Total" | variable=="Smallpelagic" | variabl
                          variable== "Largepelagic" | variable== "Smalldemersal" | variable== "Mediumdemersal" | 
                          variable== "Largedemersal" | variable== "Mediumgrazer" | variable== "Largegrazer" | 
                          variable== "Topcarnivore"), aes(x=Event, y=value, colour=variable))+
-        geom_line()+ 
+        geom_area(aes(fill=variable), position='stack')+ 
         labs(title = "Populations", 
              x="Time steps", 
              y="Abundance")+
@@ -48,7 +48,7 @@ p<-ggplot(subset(meltAll, variable=="Total" | variable=="Smallpelagic" | variabl
                            limits=c(1,50000),
                            breaks=c(0,10,100,1000,10000,100000), 
                            expand=c(0,0), labels=normal_scientific)+
-        coord_trans(y="log10")+
+        #coord_trans(y="log10")+
         #theme(panel.background = element_rect(fill = 'white'))+
         #theme
         #theme_bw()+
@@ -63,6 +63,7 @@ p
 
 # biomass calculator is missing
 # besides, a barplot would be maybe better for the purpose of representing fisheries
+# maybe even better a cumulative plot
 # CVI still missing, need graphic representation
 
 #ggsave("community.pdf", p, useDingbats=FALSE)
