@@ -6,8 +6,8 @@
 library(ggplot2)
 library(scales)
 library(reshape2)
-setwd("C:/Users/Alberto/Documents/itn_jar/out")
-data <- read.csv("start_total.csv", header=T, sep="\t", dec=",")
+setwd("C:/Users/Alberto/Desktop/itn_jar/out/total")
+data <- read.csv("start_total.00.csv", header=T, sep="\t", dec=".")
 data <- data[,c(1,4,6,8,10,12,14,16,18,20)]
 normal_scientific<-expression(0,10,10^2,10^3,10^4,10^5,10^6)
 colnames(data)<-c("Time","smallpelagic","mediumpelagic","largepelagic","smalldemersal","mediumdemersal", 
@@ -41,10 +41,10 @@ p<-ggplot(subset(data, variable=="smallpelagic" | variable=="mediumpelagic" |
         theme(axis.text.x=element_text(size=12))+
         theme(axis.text.y=element_text(size=12))
 p
-ggsave("community.pdf", p, useDingbats=FALSE)
+#ggsave("community.pdf", p, useDingbats=FALSE)
 
 
-# horrible to look at, but it works fine. very basic version, no log workarounds (no zeroes). 
+# basic version, no log workarounds (no zeroes). 
 # note: this script is appliable only to one single run. this means that the script to be applied to the directory
 # containing the batched output will require a preamble (best case scenario) to apply the code to every run, and then
 # an averaging protocol before to get into the plotting phase

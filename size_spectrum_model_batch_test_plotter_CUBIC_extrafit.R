@@ -15,8 +15,8 @@
 # 03/06/2015 correction of a syntax error in the lm formula 
 
 library(ggplot2)
-setwd("C:/Users/Alberto/Desktop/itn_jar/out/forse/forse3/ind")
-list<-list.files("C:/Users/Alberto/Desktop/itn_jar/out/forse/forse3/ind", 
+setwd("C:/Users/Alberto/Documents/MASTER THESIS/itn_e/results_0001/ind")
+list<-list.files("C:/Users/Alberto/Documents/MASTER THESIS/itn_e/results_0001/ind", 
                  recursive=TRUE, pattern="*.csv") 
 length.list<-length(list)
 read.special<-function(x) {
@@ -110,10 +110,14 @@ fitting <- function(ln_length){population_coefs[1]+population_coefs[2]*ln_length
 
 #lin_extra <- lm(ensemble$ln_freq~ensemble$ln_length)
 pol_extra <- lm(ensemble$ln_freq~ensemble$ln_length+I(ensemble$ln_length^2))
+pol_extraCube <- lm(ensemble$ln_freq~ensemble$ln_length+I(ensemble$ln_length^2)++I(ensemble$ln_length^3))
 summary(pol_extra)
 coefs_extra <- as.numeric(coef(pol_extra)) # extracts the coefficients of the quadratic model
+coefs_extraCube <- as.numeric(coef(pol_extraCube)) # extracts the coefficients of the quadratic model
 length_extra <- ensemble$ln_length
 fitting2 <- function(length_extra){coefs_extra[1]+coefs_extra[2]*length_extra+coefs_extra[3]*length_extra^2} # stores the function
+fittingCube <- function(ln_length){coefs_extraCube[1]+coefs_extraCube[2]*ln_length+
+                                           coefs_extraCube[3]*ln_length^2+coefs_extraCube[4]*ln_length^3} # stores the function
 
 #fitting2 <- spectrum built on the new curve instead
 
@@ -121,17 +125,17 @@ fitting2 <- function(length_extra){coefs_extra[1]+coefs_extra[2]*length_extra+co
 
 gplot <- ggplot(ensemble, aes(x=ln_length, y=ln_freq))+
         geom_point(shape=1)+
-        stat_function(fun = fitting2, geom="line", colour = "blue")+
-        scale_x_continuous("ln(weight class [5g])", breaks=seq(0,12,1),
-                           limits=c(0,12), labels=c(0:12))+
-        scale_y_continuous(name="ln(number of Superindividuals)", 
+        stat_function(fun = fittingCube, geom="line", colour = "blue")+
+        scale_x_continuous("ln(weight class [20g])", breaks=seq(0,11,1),
+                           limits=c(0,11), labels=c(0:11))+
+        scale_y_continuous(name="ln(number of individuals)", 
                            limits=c(0,12),
                            breaks=c(0:12))+
         labs(title="Community weight spectrum")+
         theme(panel.background = element_rect(fill = 'white'))+
         #theme
         theme_bw()+
-        theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())+
+        theme(panel.grid.minor = element_blank(), panel.grid.major = element_blank())+
         theme(plot.title = element_text(size=14, vjust=2))+
         theme(axis.title.x = element_text(size=12,vjust=-0.5),
               axis.title.y = element_text(size=12,vjust=0.5))+
@@ -139,4 +143,5 @@ gplot <- ggplot(ensemble, aes(x=ln_length, y=ln_freq))+
         theme(axis.text.y=element_text(size=12))
 
 gplot
-# saver is still missing, dang
+
+ggsave("C:/Users/Alberto/Documents/MASTER THESIS/testOutput/Community weight spectrum.pdf", gplot, useDingbats=FALSE )

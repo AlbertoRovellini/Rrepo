@@ -5,9 +5,9 @@
 # one data frame with two entries, the slope and the intercept of the linear model used to fit the data.
 # now including the option to perform lognormal transformation and regression
 
-setwd("C:/Users/Alberto/Desktop/itn_jar/out/output/ind")
+setwd("C:/Users/Alberto/Desktop/itn_jar/out/forse/forse3/ind")
 library(ggplot2)
-data <- read.csv("start_individual.55.csv", header=TRUE, sep="\t", dec=",") 
+data <- read.csv("start_individual.03.csv", header=TRUE, sep="\t", dec=",") 
 data <- subset(data, data$time=="2000.0")# & data$class=="topcarnivores") # isolates the last time step, comment out for complete analysis
 mass <- data$biomass # isolates the column with biomass. infact, no need to factorize if the spectrum is for the whole
 # community, which still has to be defined anyway
@@ -30,25 +30,28 @@ df <- data.frame(ln_freq, ln_length) # builds df of a matrix and a numeric, for 
 
 lin_fit <- lm(ln_freq~ln_length)
 pol_2 <- lm(ln_freq~ln_length+I(ln_length^2))
+pol_3 <- lm(ln_freq~ln_length+I(ln_length^2)+I(ln_length^3))
 summary(lin_fit)
 summary(pol_2)
 
 
 coefs <- as.numeric(coef(pol_2)) # extracts the coefficients of the quadratic model
-
+coefs3 <- as.numeric(coef(pol_3))
 # plotter
 
 #plot(ln_length, ln_freq, pch=16, cex=0.6, main="Size spectrum of the community",
      xlab="ln(5 g Weight classes)", ylab="ln(abundance of super-individuals)")
 #curve(coefs[1]+coefs[2]*x+coefs[3]*x^2, add=T, col="red") 
 fitting <- function(ln_length){coefs[1]+coefs[2]*ln_length+coefs[3]*ln_length^2} # stores the function
+fittingCube <- function(ln_length){coefs3[1]+coefs3[2]*ln_length+coefs3[3]*ln_length^2+coefs3[4]*ln_length^3} # stores the function
+
 # for the curve
 
 # ggplotter
 
 gplot <- ggplot(df, aes(x=ln_length, y=freq))+
         geom_point(shape=1)+
-        stat_function(fun = fitting, geom="line", colour = "blue")+
+        stat_function(fun = fittingCube, geom="line", colour = "blue")+
         scale_x_continuous("ln(weight class [5g])", breaks=seq(0,12,1),
                            limits=c(0,12), labels=c(0:12))+
         scale_y_continuous(name="ln(number of Superindividuals)", 

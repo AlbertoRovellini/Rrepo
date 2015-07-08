@@ -2,9 +2,9 @@
 
 library(ggplot2)
 library(reshape)
-setwd("C:/Users/Alberto/Documents/itn_jar/out")
-list<-list.files("C:/Users/Alberto/Documents/itn_jar/out", 
-                 recursive=TRUE, pattern="start_fishery.*") # lists all the file (might need to change to .csv)
+setwd("C:/Users/Alberto/Desktop/itn_jar/out/firstTestFishery10new/fish")
+list<-list.files("C:/Users/Alberto/Desktop/itn_jar/out/firstTestFishery10new/fish", 
+                 recursive=TRUE, pattern=".csv*") # lists all the file (might need to change to .csv)
 length.list<-length(list)
 read.special<-function(x) {
         read.table(x, header=TRUE, sep='\t') # custom function to read the batches of .csv keeping the header
@@ -25,14 +25,19 @@ library("abind")
 
 all.matrix <- abind(total, along=3)
 allData <- as.data.frame(apply(all.matrix, c(1,2), mean))
+#allDataPerc <- allData/allData$Total*100
+#allDataPerc[,1]<-allData[,1]
+#allDataPerc <- allDataPerc[c(2:nrow(allDataPerc)),]
+#meltAll <- melt(allDataPerc, id.vars="Event", variable="variable", value="value")
 meltAll <- melt(allData, id.vars="Event", variable="variable", value="value")
+
 
 runOne <- total[[1]]
 meltOne <- melt(runOne, id.vars="Event")
 normal_scientific<-expression(0,10,10^2,10^3,10^4,10^5)
 
 
-p<-ggplot(subset(meltAll, variable=="Total" | variable=="Smallpelagic" | variable=="Mediumpelagic" | 
+p<-ggplot(subset(meltAll,variable=="Smallpelagic" | variable=="Mediumpelagic" | 
                          variable== "Largepelagic" | variable== "Smalldemersal" | variable== "Mediumdemersal" | 
                          variable== "Largedemersal" | variable== "Mediumgrazer" | variable== "Largegrazer" | 
                          variable== "Topcarnivore"), aes(x=Event, y=value, colour=variable))+

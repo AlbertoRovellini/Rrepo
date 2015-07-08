@@ -5,19 +5,19 @@
 # calculate their standard deviation and plot them with the error.
 # needs as input the "total.n" files.
 
-setwd("C:/Users/Alberto/Documents/MASTER THESIS/prototype/out/total")
+setwd("C:/Users/Alberto/Documents/MASTER THESIS/itn_e/results_0001/tot")
 library(abind)
 library(reshape)
 library(ggplot2)
-list<-list.files("C:/Users/Alberto/Documents/MASTER THESIS/prototype/out/total", 
+list<-list.files("C:/Users/Alberto/Documents/MASTER THESIS/itn_e/results_0001/tot", 
                  recursive=TRUE, pattern="*.csv") #the key is the recursive argument
 length.list<-length(list)
 read.special<-function(x) {
-        read.table(x, header=TRUE, sep='\t', dec=',') # custom function to read the batches of .csv keeping the header
+        read.table(x, header=TRUE, sep='\t', dec='.') # custom function to read the batches of .csv keeping the header
 }
 data_list<-lapply(list, read.special) # all the data in a huge list of data
 matcol<-list() # empty list for the loop
-for (i in c(1:length.list)) {
+for (i in c(1:length.list)) { # should become a plyr function
         matcol[[i]]<-data_list[[i]][,c(1,4,6,8,10,12,14,16,18,20)] # list of matrix containing data of interest: time and classes for each .csv
 }
 all.matrix <- abind(matcol, along=3) # change the structure of the matrix matcol in order to use the function apply on it
@@ -51,7 +51,7 @@ limits9<-aes(ymax=comb$topcarnivores+comb$topcarnivoresSD, ymin=comb$topcarnivor
 mcomb <- melt(comb, id.vars="Time",variable.name= "variable", 
               value.name="value") # melt the dataset for ggplot
 
-normal_scientific<-expression(0,10,10^2,10^3,10^4,10^5) # notation to be used in the plot
+normal_scientific<-expression(0,10,10^2,10^3,10^4,10^5,10^6) # notation to be used in the plot
 
 # plotting code
 gplot <-ggplot(subset(mcomb, variable=="smallpelagic" | variable=="mediumpelagic" | 
@@ -68,8 +68,8 @@ gplot <-ggplot(subset(mcomb, variable=="smallpelagic" | variable=="mediumpelagic
                            name="Population")+
         scale_x_discrete("Time steps", breaks=seq(0,2000,by=250), expand=c(0,0)) +
         scale_y_continuous(name="Abundance (thousands ind 100 km^(-2)", 
-                           limits=c(1,100000),
-                           breaks=c(0,10,100,1000,10000,100000), 
+                           limits=c(1,1000000),
+                           breaks=c(0,10,100,1000,10000,100000,1000000), 
                            expand=c(0,0), labels=normal_scientific)+
         coord_trans(y="log10")+
         #errorbars
@@ -93,8 +93,8 @@ gplot <-ggplot(subset(mcomb, variable=="smallpelagic" | variable=="mediumpelagic
         theme(axis.text.x=element_text(size=10))+
         theme(axis.text.y=element_text(size=10))
 gplot
-ggsave("populations.pdf") # set better res pls
+#ggsave("populations.pdf") # set better res pls
 
-# ready with limits and all the shit. never seen an uglier plot though.
+
 
 
