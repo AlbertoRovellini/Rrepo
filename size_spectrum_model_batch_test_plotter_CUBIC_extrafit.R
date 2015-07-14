@@ -15,8 +15,8 @@
 # 03/06/2015 correction of a syntax error in the lm formula 
 
 library(ggplot2)
-setwd("C:/Users/Alberto/Documents/MASTER THESIS/itn_e/results_0001/ind")
-list<-list.files("C:/Users/Alberto/Documents/MASTER THESIS/itn_e/results_0001/ind", 
+setwd("C:/Users/Alberto/Documents/MASTER THESIS/itn_fixed/itn_e/resultsSlow/results500_10/ind")
+list<-list.files("C:/Users/Alberto/Documents/MASTER THESIS/itn_fixed/itn_e/resultsSlow/results500_10/ind", 
                  recursive=TRUE, pattern="*.csv") 
 length.list<-length(list)
 read.special<-function(x) {
@@ -40,6 +40,7 @@ size_spectrum <- function(data) { # function to build and analyze the size spect
         log_freq <- log(freq) # lognorm transformation of the frequency data
         log_length <- log(length_classes) # lognormal transformation of the length classes
         log_df <- data.frame(log_length, log_freq)
+        log_df <- log_df[c(2:nrow(log_df)),]
         pol_2 <- lm(log_freq~log_length+I(log_length^2))
         coefs <- as.numeric(coef(pol_2)) # extracts the coefficients of the quadratic model
         coefs
@@ -58,6 +59,7 @@ frequencies <-function(data) { # function to extract the frequencies for each re
         ln_freq <- log(freq) # lognorm transformation of the frequency data
         ln_length <- log(length_classes) # lognormal transformation of the length classes
         freq_breaks <- data.frame(ln_length, ln_freq)
+        freq_breaks <- freq_breaks[c(2:nrow(freq_breaks)),]
         
 }
 
@@ -95,7 +97,7 @@ for (i in 1:length(freqs)) {
 }
 maxlength <- match(max(listbreaks), listbreaks) # extracts the index of the largest break
 runs <- list()
-for (j in 1:length(freqs)) {
+for (j in 1:length(freqs)) { # what the hell is this???
         runs[[j]] <- freqs[[j]][,2]
         runs[[j]] <- c(runs[[j]], rep(0, max(listbreaks)-length(runs[[j]])))
 }
@@ -109,7 +111,7 @@ colnames(ensemble)<-c("ln_length","ln_freq")
 fitting <- function(ln_length){population_coefs[1]+population_coefs[2]*ln_length+population_coefs[3]*ln_length^2} # stores the function
 
 #lin_extra <- lm(ensemble$ln_freq~ensemble$ln_length)
-pol_extra <- lm(ensemble$ln_freq~ensemble$ln_length+I(ensemble$ln_length^2))
+pol_extra <- lm(ensemble$ln_freq~ensemble$ln_length+I(ensemble$ln_length^2)) # fit model to the MEAN freq-class
 pol_extraCube <- lm(ensemble$ln_freq~ensemble$ln_length+I(ensemble$ln_length^2)++I(ensemble$ln_length^3))
 summary(pol_extra)
 coefs_extra <- as.numeric(coef(pol_extra)) # extracts the coefficients of the quadratic model
@@ -125,17 +127,18 @@ fittingCube <- function(ln_length){coefs_extraCube[1]+coefs_extraCube[2]*ln_leng
 
 gplot <- ggplot(ensemble, aes(x=ln_length, y=ln_freq))+
         geom_point(shape=1)+
-        stat_function(fun = fittingCube, geom="line", colour = "blue")+
+        stat_function(fun = fitting2, geom="line", colour = "blue")+
         scale_x_continuous("ln(weight class [20g])", breaks=seq(0,11,1),
                            limits=c(0,11), labels=c(0:11))+
         scale_y_continuous(name="ln(number of individuals)", 
                            limits=c(0,12),
                            breaks=c(0:12))+
-        labs(title="Community weight spectrum")+
+        #labs(title="Community weight spectrum")+
         theme(panel.background = element_rect(fill = 'white'))+
         #theme
         theme_bw()+
-        theme(panel.grid.minor = element_blank(), panel.grid.major = element_blank())+
+        theme(panel.grid.minor = element_blank(), 
+              panel.grid.major = element_line(linetype="dashed"))+
         theme(plot.title = element_text(size=14, vjust=2))+
         theme(axis.title.x = element_text(size=12,vjust=-0.5),
               axis.title.y = element_text(size=12,vjust=0.5))+
@@ -144,4 +147,4 @@ gplot <- ggplot(ensemble, aes(x=ln_length, y=ln_freq))+
 
 gplot
 
-ggsave("C:/Users/Alberto/Documents/MASTER THESIS/testOutput/Community weight spectrum.pdf", gplot, useDingbats=FALSE )
+ggsave("C:/Users/Alberto/Documents/MASTER THESIS/testOutput/test12072015/Community weight spectrum_selective500_10.pdf", gplot, useDingbats=FALSE )

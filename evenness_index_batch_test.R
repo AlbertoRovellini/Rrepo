@@ -8,8 +8,8 @@
 # then calculate id
 # needs as input the "total.n" files.
 
-setwd("C:/Users/Alberto/Documents/MASTER THESIS/prototype/out/total") # points the folder with the batch output
-list<-list.files("C:/Users/Alberto/Documents/MASTER THESIS/prototype/out/total", 
+setwd("C:/Users/Alberto/Documents/MASTER THESIS/itn_fixed/itn_e/resultsSlow/results500_50/tot") # points the folder with the batch output
+list<-list.files("C:/Users/Alberto/Documents/MASTER THESIS/itn_fixed/itn_e/resultsSlow/results500_50/tot", 
                  recursive=TRUE, pattern="*.csv") # lists all the file (might need to change to .csv)
 length.list<-length(list)
 read.special<-function(x) {
@@ -32,6 +32,6 @@ ids_scenario <- (c(mean(ids), sd(ids))) # returns mean and sd of the index acros
 ids_scenario <- data.frame(ids_scenario[1], ids_scenario[2])
 colnames(ids_scenario) <- c("Mean Evenness Index", "Standard deviation Evenness Index")
 ids_scenario
-write.csv(ids_scenario, "evenness_scenario.csv")
+#write.csv(ids_scenario, "evenness_scenario.csv")
 
 # APPROVED and DOUBLECHECKED

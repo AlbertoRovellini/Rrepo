@@ -1,13 +1,14 @@
 # script to read and process the fishery output
+# chart area, directory on the trial output of the "working" model, 09/07/2015
 
 library(ggplot2)
 library(reshape)
-setwd("C:/Users/Alberto/Desktop/itn_jar/out/firstTestFishery10new/fish")
-list<-list.files("C:/Users/Alberto/Desktop/itn_jar/out/firstTestFishery10new/fish", 
+setwd("C:/Users/Alberto/Documents/MASTER THESIS/itn_fixed/itn_e/resultsSlow/results500_20/fish")
+list<-list.files("C:/Users/Alberto/Documents/MASTER THESIS/itn_fixed/itn_e/resultsSlow/results500_20/fish", 
                  recursive=TRUE, pattern=".csv*") # lists all the file (might need to change to .csv)
 length.list<-length(list)
 read.special<-function(x) {
-        read.table(x, header=TRUE, sep='\t') # custom function to read the batches of .csv keeping the header
+        read.table(x, header=TRUE, sep='\t', skip=1) # custom function to read the batches of .csv keeping the header
 }
 data_list <- lapply(list, read.special)
 
@@ -17,9 +18,24 @@ for (i in 1:length(data_list)) {
         colnames(total[[i]]) <- c("Event", "Time", "Total","Smallpelagic","Mediumpelagic","Largepelagic",
                                   "Smalldemersal", "Mediumdemersal","Largedemersal","Mediumgrazer","Largegrazer",
                                   "Topcarnivore","NA1")
-        drops <- c("NA1", "Time")
+        drops <- c("NA1", "Time", "Mediumgrazer","Largegrazer")
         total[[i]] <- total[[i]][,!(names(total[[i]]) %in% drops)]
 }
+
+grouper <- function (targetFrame) { # function to sum rows two by two
+        apply(targetFrame, 2, function(x) tapply(x, (seq_along(x)-1) %/% 5, sum)) 
+}
+
+# next lines are for the sum of the rows, trash them in case of 1 event per year.
+##################################################################
+
+total <- lapply(total, grouper)
+Event <- c(1:nrow(total[[1]])) # vector with the number of years or events
+eventWriter <- function(z) {z[,1]<- Event # function to substitute the first column of the frames
+                            return(z)}
+total <- lapply(total, eventWriter)
+
+##################################################################
 
 library("abind")
 
@@ -34,7 +50,7 @@ meltAll <- melt(allData, id.vars="Event", variable="variable", value="value")
 
 runOne <- total[[1]]
 meltOne <- melt(runOne, id.vars="Event")
-normal_scientific<-expression(0,10,10^2,10^3,10^4,10^5)
+trick<-expression(seq(0,7000,1000))
 
 
 p<-ggplot(subset(meltAll,variable=="Smallpelagic" | variable=="Mediumpelagic" | 
@@ -42,22 +58,19 @@ p<-ggplot(subset(meltAll,variable=="Smallpelagic" | variable=="Mediumpelagic" |
                          variable== "Largedemersal" | variable== "Mediumgrazer" | variable== "Largegrazer" | 
                          variable== "Topcarnivore"), aes(x=Event, y=value, colour=variable))+
         geom_area(aes(fill=variable), position='stack')+ 
-        labs(title = "Populations", 
-             x="Time steps", 
-             y="Abundance")+
-        scale_color_manual(values=c("blue","red", "darkgreen","yellow","orange", "darkgrey", "magenta", "black", "purple", "brown"), 
-                           name="Groups")+
-        scale_x_continuous("Years", breaks=seq(0,20,1),
-                           limits=c(0,20), labels=seq(0,20,1), expand=c(0,0))+
-        scale_y_continuous(name="Superindividuals", 
-                           limits=c(1,50000),
-                           breaks=c(0,10,100,1000,10000,100000), 
-                           expand=c(0,0), labels=normal_scientific)+
+        labs(x="Years", 
+             y="Catch (kg)")+
+        scale_x_continuous("Years", breaks=seq(1,20,1),
+                           limits=c(0,21), labels=seq(1,20,1), expand=c(0,0))+
+        scale_y_continuous(limits=c(0,7000000),
+                           breaks=seq(0,7000000,1000000), 
+                           expand=c(0,0), labels=seq(0,7000,1000))+
         #coord_trans(y="log10")+
-        #theme(panel.background = element_rect(fill = 'white'))+
+        theme(panel.background = element_rect(fill = 'white'))+
         #theme
-        #theme_bw()+
-        theme(panel.grid.minor = element_blank())+#, panel.grid.major = element_blank())+
+        theme_bw()+
+        theme(panel.grid.minor = element_blank(), 
+              panel.grid.major = element_line(linetype="dashed"))+
         theme(plot.title = element_text(size=14, vjust=2))+
         theme(axis.title.x = element_text(size=12,vjust=-0.5),
               axis.title.y = element_text(size=12,vjust=0.5))+
@@ -66,9 +79,5 @@ p<-ggplot(subset(meltAll,variable=="Smallpelagic" | variable=="Mediumpelagic" |
         theme(axis.text.y=element_text(size=12))
 p
 
-# biomass calculator is missing
-# besides, a barplot would be maybe better for the purpose of representing fisheries
-# maybe even better a cumulative plot
-# CVI still missing, need graphic representation
 
-#ggsave("community.pdf", p, useDingbats=FALSE)
+ggsave("C:/Users/Alberto/Documents/MASTER THESIS/testOutput/test12072015/500_20.pdf", p, useDingbats=FALSE )

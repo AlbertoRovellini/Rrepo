@@ -1,9 +1,9 @@
 # script to calculate the mean and sd of the biomass of each class at the final time step. 
 
-setwd("C:/Users/Alberto/Documents/MASTER THESIS/itn_fixed/itn_e/resultsSlow/results500_20/tot")
+setwd("C:/Users/Alberto/Documents/MASTER THESIS/itn_fixed/itn_e/results_0001/tot")
 library(abind)
 library(reshape)
-list<-list.files("C:/Users/Alberto/Documents/MASTER THESIS/itn_fixed/itn_e/resultsSlow/results500_20/tot", 
+list<-list.files("C:/Users/Alberto/Documents/MASTER THESIS/itn_fixed/itn_e/results_0001/tot", 
                  recursive=TRUE, pattern="*.csv") #the key is the recursive argument
 length.list<-length(list)
 read.special<-function(x) {
@@ -12,7 +12,7 @@ read.special<-function(x) {
 data_list<-lapply(list, read.special) # all the data in a huge list of data
 matcol<-list() # empty list for the loop
 for (i in c(1:length.list)) {
-        matcol[[i]]<-data_list[[i]][,seq(1, 21, 2)] # list of matrix containing data of interest: time and classes for each .csv
+        matcol[[i]]<-data_list[[i]][,c(1, seq(2, 20, 2))] # list of matrix containing data of interest: time and classes for each .csv
 }
 all.matrix <- abind(matcol, along=3) # change the structure of the matrix matcol in order to use the function apply on it
 mean_all <- apply(all.matrix, c(1,2), mean) # calculates the mean biomass in every position
@@ -31,7 +31,5 @@ comb <- merge(mean_all, sd_all, "Time")
 percentages <- mean_all/mean_all[,2]*100
 variation <- sd_all*100/mean_all # computes the ratio between sd and mean (in percentage)
 percentages
-write.table(percentages, "C:/Users/Alberto/Documents/MASTER THESIS/testOutput/percentages.csv")
-write.table(mean_all, "C:/Users/Alberto/Documents/MASTER THESIS/testOutput/meanBiomass.csv")
-
-
+write.table(percentages, "C:/Users/Alberto/Documents/MASTER THESIS/testOutput/test12072015/percentages.csv")
+write.table(mean_all, "C:/Users/Alberto/Documents/MASTER THESIS/testOutput/test12072015/meanBiomass.csv")

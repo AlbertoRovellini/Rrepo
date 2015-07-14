@@ -5,11 +5,11 @@
 # calculate their standard deviation and plot them with the error.
 # needs as input the "total.n" files.
 
-setwd("C:/Users/Alberto/Desktop/itn_jar/out/firstTestFishery50/tot")
+setwd("C:/Users/Alberto/Documents/MASTER THESIS/itn_fixed/itn_e/results_0000/tot")
 library(abind)
 library(reshape)
 library(ggplot2)
-list<-list.files("C:/Users/Alberto/Desktop/itn_jar/out/firstTestFishery50/tot", 
+list<-list.files("C:/Users/Alberto/Documents/MASTER THESIS/itn_fixed/itn_e/results_0000/tot", 
                  recursive=TRUE, pattern="*.csv") #the key is the recursive argument
 length.list<-length(list)
 read.special<-function(x) {
@@ -87,15 +87,16 @@ gplot <-ggplot(subset(mcomb, variable=="total" | variable=="smallpelagic" | vari
         theme(panel.background = element_rect(fill = 'white'))+
         #theme
         theme_bw()+
-        theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())+
+        theme(panel.grid.minor = element_blank(), 
+              panel.grid.major = element_line(linetype="dashed"))+
         theme(plot.title = element_text(size=14, vjust=2))+
         theme(axis.title.x = element_text(size=12,vjust=-0.5),
               axis.title.y = element_text(size=12,vjust=0.5))+
-        theme(legend.title = element_text(size=12))+
-        theme(axis.text.x=element_text(size=10))+
-        theme(axis.text.y=element_text(size=10))
+        theme(axis.text.x=element_text(size=12))+
+        theme(axis.text.y=element_text(size=12))
+
 gplot
-ggsave("C:/Users/Alberto/Documents/MASTER THESIS/testOutput/Community biomass50.pdf", gplot, useDingbats=FALSE ) # set better res pls
+ggsave("C:/Users/Alberto/Documents/MASTER THESIS/testOutput/test09072015/Community biomass.pdf", gplot, useDingbats=FALSE ) # set better res pls
 
 
 

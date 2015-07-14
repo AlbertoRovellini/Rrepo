@@ -1,9 +1,9 @@
 # script to calculate the mean and sd of the biomass of each class at the final time step. 
 
-setwd("C:/Users/Alberto/Documents/MASTER THESIS/itn_fixed/itn_e/resultsSlow/results500_20/tot")
+setwd("C:/Users/Alberto/Documents/MASTER THESIS/itn_fixed/itn_e/results_0003/tot")
 library(abind)
 library(reshape)
-list<-list.files("C:/Users/Alberto/Documents/MASTER THESIS/itn_fixed/itn_e/resultsSlow/results500_20/tot", 
+list<-list.files("C:/Users/Alberto/Documents/MASTER THESIS/itn_fixed/itn_e/results_0003/tot", 
                  recursive=TRUE, pattern="*.csv") #the key is the recursive argument
 length.list<-length(list)
 read.special<-function(x) {
@@ -30,8 +30,14 @@ sd_all<-as.data.frame(sd_all) # same
 comb <- merge(mean_all, sd_all, "Time")
 percentages <- mean_all/mean_all[,2]*100
 variation <- sd_all*100/mean_all # computes the ratio between sd and mean (in percentage)
-percentages
-write.table(percentages, "C:/Users/Alberto/Documents/MASTER THESIS/testOutput/percentages.csv")
-write.table(mean_all, "C:/Users/Alberto/Documents/MASTER THESIS/testOutput/meanBiomass.csv")
+totalBiomass <- mean_all[2]
+
+I1 <- totalBiomass/10
+I2 <- totalBiomass/5
+I3 <- totalBiomass/2
+
+intensities <- data.frame(I1,I2,I3)
+intensitiesPerCycle <- intensities/5 # assuming the regime of 5 cycles of 10 steps per year
+intensitiesPerCycle
 
 

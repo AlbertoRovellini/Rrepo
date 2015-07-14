@@ -7,7 +7,7 @@ library(abind)
 # data from the 10 scenario
 setwd("C:/Users/Alberto/Documents/MASTER THESIS/itn_fixed/itn_e/resultsSlow/resultsUnselective10/fish")
 list10<-list.files("C:/Users/Alberto/Documents/MASTER THESIS/itn_fixed/itn_e/resultsSlow/resultsUnselective50/fish", 
-                 recursive=TRUE, pattern=".csv*") # lists all the file (might need to change to .csv)
+                   recursive=TRUE, pattern=".csv*") # lists all the file (might need to change to .csv)
 length.list10<-length(list10)
 read.special<-function(x) {
         read.table(x, header=TRUE, sep='\t', dec='.', skip=1) # custom function to read the batches of .csv keeping the header
@@ -22,30 +22,29 @@ for (i in 1:length(data_list10)) {
         colnames(total10[[i]]) <- c("Event", "Total")
 }
 
-grouper <- function (targetFrame) { # function to sum rows two by two
-        apply(targetFrame, 2, function(x) tapply(x, (seq_along(x)-1) %/% 5, sum)) 
+all.matrix10 <- abind(total10, along=3)
+allData10 <- as.data.frame(apply(all.matrix10, c(1,2), mean))
+
+grouper <- function (x) { # function to sum rows two by two
+         tapply(x, (seq_along(x)-1) %/% 5, sum)
 }
 
 # next lines are for the sum of the rows, trash them in case of 1 event per year.
 ##################################################################
 
-total10 <- lapply(total10, grouper)
-Event <- c(1:nrow(total10[[1]])) # vector with the number of years or events
+allData10 <- lapply(allData10, grouper)
+Event <- c(1:nrow(allData10[[1]])) # vector with the number of years or events
 eventWriter <- function(z) {z[,1]<- Event # function to substitute the first column of the frames
                             return(z)}
-total10 <- lapply(total10, eventWriter)
+allData10 <- lapply(allData10, eventWriter)
 
 ##################################################################
-
-all.matrix10 <- abind(total10, along=3)
-allData10 <- as.data.frame(apply(all.matrix10, c(1,2), mean))
-#meltAll10 <- melt(allData10, id.vars="Event", variable="variable", value="value")
 
 # data from the 20 scenario
 
 setwd("C:/Users/Alberto/Documents/MASTER THESIS/itn_fixed/itn_e/resultsSlow/resultsUnselective20/fish")
 list20<-list.files("C:/Users/Alberto/Documents/MASTER THESIS/itn_fixed/itn_e/resultsSlow/resultsUnselective20/fish", 
-                 recursive=TRUE, pattern=".csv") # lists all the file (might need to change to .csv)
+                   recursive=TRUE, pattern=".csv") # lists all the file (might need to change to .csv)
 length.list20<-length(list20)
 data_list20 <- lapply(list20, read.special)
 
