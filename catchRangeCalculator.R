@@ -18,3 +18,17 @@ rownames(catchRangesVar) <- varFactors
 
 catchRangesVar
 
+# for the systematic analysis
+
+varFactorsSystematic <- c(0.9,1,1.1)
+
+catchRangesVarSystematic <- list()
+for (i in 1:length(varFactorsSystematic)) {
+        catchRangesVarSystematic[[i]]<- catchRanges*varFactorsSystematic[i]
+}
+
+catchRangesVarSystematic <- abind(catchRangesVarSystematic, along=1)
+rownames(catchRangesVarSystematic) <- varFactorsSystematic
+
+catchRangesVarSystematic
+
