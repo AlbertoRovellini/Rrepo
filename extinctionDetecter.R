@@ -1,14 +1,14 @@
 # extinction detecter, because why not
 
-setwd("C:/Users/Alberto/Documents/MASTER THESIS/itn_fixed/itn_e/resultsSlow/results500_20/tot")
+setwd("C:/Users/Alberto/Documents/itn100results/mixed250_i3/tot")
 library(abind)
 library(reshape)
-list<-list.files("C:/Users/Alberto/Documents/MASTER THESIS/itn_fixed/itn_e/resultsSlow/results500_20/tot", 
+list<-list.files("C:/Users/Alberto/Documents/itn100results/mixed250_i3/tot", 
                  recursive=TRUE, pattern="*.csv") #the key is the recursive argument
 length.list<-length(list)
 read.special<-function(x) {
-        read.table(x, header=TRUE, sep='\t', dec='.') # custom function to read the batches of .csv keeping the header
-}
+        read.table(x, header=TRUE, sep='\t', dec='.', nrows=2001) # custom function to read the batches of .csv keeping the header
+} # 2001 because the 2100 steps is an artifact for the last fishery cycle
 data_list<-lapply(list, read.special) # all the data in a huge list of data
 matcol<-list() # empty list for the loop
 for (i in c(1:length.list)) { # should become a plyr function
@@ -20,4 +20,7 @@ extinctionDetector <- function(x) {
 }
 fails <- unlist(lapply(matcol, extinctionDetector))
 fails <- length(subset(fails, fails=="extinction"))
+fails
+
+write.table(fails, "C:/Users/Alberto/Documents/MASTER THESIS/results/R_output/scenarios/class/i3/extinctions.csv")
 

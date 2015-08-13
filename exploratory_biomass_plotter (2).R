@@ -5,11 +5,11 @@
 # calculate their standard deviation and plot them with the error.
 # needs as input the "total.n" files.
 
-setwd("C:/Users/Alberto/Documents/MASTER THESIS/itn_fixed/itn_e/results_0000/tot")
+setwd("C:/Users/Alberto/Documents/itn100results/resultsBase/tot/half")
 library(abind)
 library(reshape)
 library(ggplot2)
-list<-list.files("C:/Users/Alberto/Documents/MASTER THESIS/itn_fixed/itn_e/results_0000/tot", 
+list<-list.files("C:/Users/Alberto/Documents/itn100results/resultsBase/tot/half", 
                  recursive=TRUE, pattern="*.csv") #the key is the recursive argument
 length.list<-length(list)
 read.special<-function(x) {
@@ -61,7 +61,7 @@ gplot <-ggplot(subset(mcomb, variable=="total" | variable=="smallpelagic" | vari
                               variable== "topcarnivores"),
                aes(x=Time,y=value, color=variable))+
         geom_line()+ 
-        labs(title = "Biomass of the classes", 
+        labs(#title = "Biomass of the classes", 
              x="Time steps", 
              y="Biomass (kg)")+ # will need to be changed to tonnes
         scale_color_manual(values=c("black", "blue", "red","green", "yellow", "orange", "purple", 
@@ -96,7 +96,7 @@ gplot <-ggplot(subset(mcomb, variable=="total" | variable=="smallpelagic" | vari
         theme(axis.text.y=element_text(size=12))
 
 gplot
-ggsave("C:/Users/Alberto/Documents/MASTER THESIS/testOutput/test09072015/Community biomass.pdf", gplot, useDingbats=FALSE ) # set better res pls
+ggsave("C:/Users/Alberto/Documents/itn100results/R_output/base/tot/biomass.pdf", gplot, useDingbats=FALSE ) # set better res pls
 
 
 

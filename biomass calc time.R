@@ -1,20 +1,21 @@
 # script to calculate the mean and sd of the biomass of each class at the final time step. 
 
-setwd("C:/Users/Alberto/Documents/itn100results/unselective_i3/tot")
+setwd("C:/Users/Alberto/Documents/itn100results/resultsBase/tot/half")
 library(abind)
 library(reshape)
-list<-list.files("C:/Users/Alberto/Documents/itn100results/unselective_i3/tot", 
+list<-list.files("C:/Users/Alberto/Documents/itn100results/resultsBase/tot/half", 
                  recursive=TRUE, pattern="*.csv") #the key is the recursive argument
 length.list<-length(list)
 read.special<-function(x) {
-        read.table(x, header=TRUE, sep='\t', dec='.', skip=2000, nrow=1) # custom function to read the batches of .csv keeping the header
+        read.table(x, header=TRUE, sep='\t', dec='.', skip=1800, nrow=200) # custom function to read the batches of .csv keeping the header
 }
 data_list<-lapply(list, read.special) # all the data in a huge list of data
 matcol<-list() # empty list for the loop
 for (i in c(1:length.list)) {
         matcol[[i]]<-data_list[[i]][,seq(1, 21, 2)] # list of matrix containing data of interest: time and classes for each .csv
 }
-all.matrix <- abind(matcol, along=3) # change the structure of the matrix matcol in order to use the function apply on it
+matcol <- lapply(matcol, colMeans) # no
+all.matrix <- cbind(matcol) # change the structure of the matrix matcol in order to use the function apply on it
 mean_all <- apply(all.matrix, c(1,2), mean) # calculates the mean biomass in every position
 sd_all <- apply(all.matrix, c(1,2), sd) # and its sd
 sd_all[,1] <- mean_all[,1]
@@ -38,5 +39,3 @@ comb[c(2,12)]
 # comb[c(2,12)]
 # #write.table(percentages, "C:/Users/Alberto/Documents/MASTER THESIS/testOutput/percentages.csv")
 # #write.table(mean_all, "C:/Users/Alberto/Documents/MASTER THESIS/testOutput/meanBiomass.csv")
-
-

@@ -3,8 +3,8 @@
 
 library(ggplot2)
 library(reshape)
-setwd("C:/Users/Alberto/Documents/MASTER THESIS/itn_fixed/itn_e/resultsSlow/results500_20/fish")
-list<-list.files("C:/Users/Alberto/Documents/MASTER THESIS/itn_fixed/itn_e/resultsSlow/results500_20/fish", 
+setwd("C:/Users/Alberto/Documents/itn100results/size250_i3/fish")
+list<-list.files("C:/Users/Alberto/Documents/itn100results/size250_i3/fish", 
                  recursive=TRUE, pattern=".csv*") # lists all the file (might need to change to .csv)
 length.list<-length(list)
 read.special<-function(x) {
@@ -41,11 +41,12 @@ library("abind")
 
 all.matrix <- abind(total, along=3)
 allData <- as.data.frame(apply(all.matrix, c(1,2), mean))
+allData1 <- allData[c(1:(nrow(allData)-2)),]
 #allDataPerc <- allData/allData$Total*100
 #allDataPerc[,1]<-allData[,1]
 #allDataPerc <- allDataPerc[c(2:nrow(allDataPerc)),]
 #meltAll <- melt(allDataPerc, id.vars="Event", variable="variable", value="value")
-meltAll <- melt(allData, id.vars="Event", variable="variable", value="value")
+meltAll <- melt(allData1, id.vars="Event", variable="variable", value="value")
 
 
 runOne <- total[[1]]
@@ -80,4 +81,4 @@ p<-ggplot(subset(meltAll,variable=="Smallpelagic" | variable=="Mediumpelagic" |
 p
 
 
-ggsave("C:/Users/Alberto/Documents/MASTER THESIS/testOutput/test12072015/500_20.pdf", p, useDingbats=FALSE )
+ggsave("C:/Users/Alberto/Documents/itn100results/R_output/size250/fish/i3.pdf", p, useDingbats=FALSE )

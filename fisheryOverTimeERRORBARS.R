@@ -5,8 +5,8 @@ library(reshape)
 library(abind)
 
 # data from the 10 scenario
-setwd("C:/Users/Alberto/Documents/MASTER THESIS/itn_fixed/itn_e/resultsSlow/resultsUnselective10/fish")
-list10<-list.files("C:/Users/Alberto/Documents/MASTER THESIS/itn_fixed/itn_e/resultsSlow/resultsUnselective50/fish", 
+setwd("C:/Users/Alberto/Documents/itn100results/mixed250_i1/fish")
+list10<-list.files("C:/Users/Alberto/Documents/itn100results/mixed250_i1/fish", 
                  recursive=TRUE, pattern=".csv*") # lists all the file (might need to change to .csv)
 length.list10<-length(list10)
 read.special<-function(x) {
@@ -53,8 +53,8 @@ sdev10 <- eventWriter(sdev10)
 
 # data from the 20 scenario
 
-setwd("C:/Users/Alberto/Documents/MASTER THESIS/itn_fixed/itn_e/resultsSlow/resultsUnselective20/fish")
-list20<-list.files("C:/Users/Alberto/Documents/MASTER THESIS/itn_fixed/itn_e/resultsSlow/resultsUnselective50/fish", 
+setwd("C:/Users/Alberto/Documents/itn100results/mixed250_i2/fish")
+list20<-list.files("C:/Users/Alberto/Documents/itn100results/mixed250_i2/fish", 
                    recursive=TRUE, pattern=".csv*") # lists all the file (might need to change to .csv)
 length.list20<-length(list20)
 read.special<-function(x) {
@@ -85,8 +85,8 @@ sdev20 <- eventWriter(sdev20)
 
 # data from the 50 scenario
 
-setwd("C:/Users/Alberto/Documents/MASTER THESIS/itn_fixed/itn_e/resultsSlow/resultsUnselective50/fish")
-list50<-list.files("C:/Users/Alberto/Documents/MASTER THESIS/itn_fixed/itn_e/resultsSlow/resultsUnselective50/fish", 
+setwd("C:/Users/Alberto/Documents/itn100results/mixed250_i3/fish")
+list50<-list.files("C:/Users/Alberto/Documents/itn100results/mixed250_i3/fish", 
                    recursive=TRUE, pattern=".csv*") # lists all the file (might need to change to .csv)
 length.list50<-length(list50)
 read.special<-function(x) {
@@ -118,16 +118,18 @@ sdev50 <- eventWriter(sdev50)
 # put them together
 
 allData <- data.frame(total10, total20[,2], total50[,2])
-colnames(allData) <- c("Event", "pressure10", "pressure20", "pressure50")
-allDataMelt <- melt(allData, id.vars="Event")
+allData1 <- allData[c(1:(nrow(allData)-2)),]
+colnames(allData1) <- c("Event", "pressure10", "pressure20", "pressure50")
+allDataMelt <- melt(allData1, id.vars="Event")
 
 allsd <- data.frame(sdev10, sdev20[,2], sdev50[,2])
-colnames(allsd) <- c("Event", "sd10", "sd20", "sd50")
-allsdMelt <- melt(allsd, id.vars="Event")
+allsd1 <- allsd[c(1:(nrow(allsd)-2)),]
+colnames(allsd1) <- c("Event", "sd10", "sd20", "sd50")
+allsdMelt <- melt(allsd1, id.vars="Event")
 
-limits10<-aes(ymax=allData$pressure10+allsd$sd10, ymin=allData$pressure10-allsd$sd10)
-limits20<-aes(ymax=allData$pressure20+allsd$sd20, ymin=allData$pressure20-allsd$sd20) 
-limits50<-aes(ymax=allData$pressure50+allsd$sd50, ymin=allData$pressure50-allsd$sd50) 
+limits10<-aes(ymax=allData1$pressure10+allsd1$sd10, ymin=allData1$pressure10-allsd1$sd10)
+limits20<-aes(ymax=allData1$pressure20+allsd1$sd20, ymin=allData1$pressure20-allsd1$sd20) 
+limits50<-aes(ymax=allData1$pressure50+allsd1$sd50, ymin=allData1$pressure50-allsd1$sd50) 
 
 
 trick<-expression(seq(0,7000,1000))
@@ -144,9 +146,9 @@ p<-ggplot(subset(allDataMelt, variable=="pressure10" | variable=="pressure20" |v
                            breaks=seq(0,7000000,1000000), 
                            expand=c(0,0), labels=seq(0,7000,1000))+
         #errorbars
-        geom_errorbar(limits10, data=subset(allDataMelt, variable=="pressure10"))+
-        geom_errorbar(limits20, data=subset(allDataMelt, variable=="pressure20"))+
-        geom_errorbar(limits50, data=subset(allDataMelt, variable=="pressure50"))+
+        geom_errorbar(limits10, data=subset(allDataMelt, variable=="pressure10"), width=0.3, position="dodge")+
+        geom_errorbar(limits20, data=subset(allDataMelt, variable=="pressure20"), width=0.3, position="dodge")+
+        geom_errorbar(limits50, data=subset(allDataMelt, variable=="pressure50"), width=0.3, position="dodge")+
         #coord_trans(y="log10")+
         theme(panel.background = element_rect(fill = 'white'))+
         #theme
@@ -166,4 +168,4 @@ p
 # maybe even better a cumulative plot
 # CVI still missing, need graphic representation
 
-ggsave("C:/Users/Alberto/Documents/MASTER THESIS/testOutput/test12072015/compareUnselective.pdf", p, useDingbats=FALSE )
+ggsave("C:/Users/Alberto/Documents/itn100results/R_output/mixed250/fish/tot.pdf", p, useDingbats=FALSE )

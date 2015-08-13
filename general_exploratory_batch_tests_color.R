@@ -5,15 +5,15 @@
 # calculate their standard deviation and plot them with the error.
 # needs as input the "total.n" files.
 
-setwd("C:/Users/Alberto/Documents/MASTER THESIS/itn_e/results_0001/tot")
+setwd("C:/Users/Alberto/Documents/itn100results/resultsBase/tot/half")
 library(abind)
 library(reshape)
 library(ggplot2)
-list<-list.files("C:/Users/Alberto/Documents/MASTER THESIS/itn_e/results_0001/tot", 
+list<-list.files("C:/Users/Alberto/Documents/itn100results/resultsBase/tot/half", 
                  recursive=TRUE, pattern="*.csv") #the key is the recursive argument
 length.list<-length(list)
 read.special<-function(x) {
-        read.table(x, header=TRUE, sep='\t', dec='.') # custom function to read the batches of .csv keeping the header
+        read.table(x, header=TRUE, sep='\t', dec='.', nrow=2000) # custom function to read the batches of .csv keeping the header
 }
 data_list<-lapply(list, read.special) # all the data in a huge list of data
 matcol<-list() # empty list for the loop
@@ -60,9 +60,9 @@ gplot <-ggplot(subset(mcomb, variable=="smallpelagic" | variable=="mediumpelagic
                               variable== "topcarnivores"),
                aes(x=Time,y=value, color=variable))+
         geom_line(aes(color=variable))+ 
-        labs(title = "Population dynamics of the community", 
+        labs(#title = "Population dynamics of the community", 
              x="Time steps", 
-             y="Abundance (thousands ind 100 km^2)")+
+             y="Abundance (total num of individuals)")+
         scale_color_manual(values=c("blue", "red", "green", "yellow", "purple", 
                                        "black", "pink", "white", "grey"), 
                               name="Population")+
@@ -84,16 +84,19 @@ gplot <-ggplot(subset(mcomb, variable=="smallpelagic" | variable=="mediumpelagic
         geom_errorbar(limits9, alpha=0.1, data=subset(mcomb, variable=="topcarnivores"))+
         theme(panel.background = element_rect(fill = 'white'))+
         #theme
+        theme(panel.background = element_rect(fill = 'white'))+
+        #theme
         theme_bw()+
-        theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())+
+        theme(panel.grid.minor = element_blank(), 
+              panel.grid.major = element_line(linetype="dashed"))+
         theme(plot.title = element_text(size=14, vjust=2))+
         theme(axis.title.x = element_text(size=12,vjust=-0.5),
               axis.title.y = element_text(size=12,vjust=0.5))+
-        theme(legend.title = element_text(size=12))+
-        theme(axis.text.x=element_text(size=10))+
-        theme(axis.text.y=element_text(size=10))
+        theme(axis.text.x=element_text(size=12))+
+        theme(axis.text.y=element_text(size=12))
 gplot
-ggsave("C:/Users/Alberto/Documents/MASTER THESIS/testOutput/Population dynamic.pdf", gplot, useDingbats=FALSE ) # set better res pls
+
+ggsave("C:/Users/Alberto/Documents/itn100results/R_output/base/tot/population.pdf", gplot, useDingbats=FALSE ) # set better res pls
 
 
 

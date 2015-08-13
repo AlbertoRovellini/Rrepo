@@ -15,8 +15,8 @@
 # 03/06/2015 correction of a syntax error in the lm formula 
 
 library(ggplot2)
-setwd("C:/Users/Alberto/Documents/MASTER THESIS/itn_fixed/itn_e/resultsSlow/resultsNoFishery/ind")
-list<-list.files("C:/Users/Alberto/Documents/MASTER THESIS/itn_fixed/itn_e/resultsSlow/resultsNoFishery/ind", 
+setwd("C:/Users/Alberto/Documents/itn100results/size250_i3/ind/test10")
+list<-list.files("C:/Users/Alberto/Documents/itn100results/size250_i3/ind/test10", 
                  recursive=TRUE, pattern="*.csv") 
 length.list<-length(list)
 read.special<-function(x) {
@@ -83,42 +83,12 @@ p <- ggplot(ensemble, aes(x = ln_length, y = ln_freq)) +
         #geom_point() +
         geom_line(data = pdat, aes(x=bin, y=pred), colour = "blue") + 
         geom_ribbon(data = pdat, mapping = aes(x=bin, y=pred, ymax = ymax, ymin = ymin),  
-                    alpha = 0.4, fill = "grey60")
-p
-
-lines(newx$bin,predict(fitExperiment,newdata=newx)) # I do realize it's actually the exact same stuff I did
-
-qplot(ensemble$ln_length,ensemble$ln_freq, geom='smooth', method = "lm", 
-      formula = y ~ x + I(x^2), span=1)+
-        geom_point()
-
-
-
-
-
-#lin_extra <- lm(ensemble$ln_freq~ensemble$ln_length)
-pol_extra <- lm(ensemble$ln_freq~ensemble$ln_length+I(ensemble$ln_length^2)) # fit model to the MEAN freq-class
-pol_extraCube <- lm(ensemble$ln_freq~ensemble$ln_length+I(ensemble$ln_length^2)++I(ensemble$ln_length^3))
-summary(pol_extra)
-coefs_extra <- as.numeric(coef(pol_extra)) # extracts the coefficients of the quadratic model
-coefs_extraCube <- as.numeric(coef(pol_extraCube)) # extracts the coefficients of the quadratic model
-length_extra <- ensemble$ln_length
-fitting2 <- function(length_extra){coefs_extra[1]+coefs_extra[2]*length_extra+coefs_extra[3]*length_extra^2} # stores the function
-fittingCube <- function(ln_length){coefs_extraCube[1]+coefs_extraCube[2]*ln_length+
-                                           coefs_extraCube[3]*ln_length^2+coefs_extraCube[4]*ln_length^3} # stores the function
-
-#fitting2 <- spectrum built on the new curve instead
-
-# ggplotter
-
-gplot <- ggplot(ensemble, aes(x=ln_length, y=ln_freq))+
-        geom_point(shape=1)+
-        stat_function(fun = fitting2, geom="line", colour = "blue")+
+                    alpha = 0.4, fill = "grey60")+
         scale_x_continuous("ln(weight class [20g])", breaks=seq(0,11,1),
                            limits=c(0,11), labels=c(0:11))+
         scale_y_continuous(name="ln(number of individuals)", 
-                           limits=c(0,12),
-                           breaks=c(0:12))+
+                           limits=c(-2,16),
+                           breaks=c(-2:16))+
         #labs(title="Community weight spectrum")+
         theme(panel.background = element_rect(fill = 'white'))+
         #theme
@@ -131,6 +101,59 @@ gplot <- ggplot(ensemble, aes(x=ln_length, y=ln_freq))+
         theme(axis.text.x=element_text(size=12))+
         theme(axis.text.y=element_text(size=12))
 
-gplot
+p
+coef(fitExperiment)
+summary(fitExperiment)
+
+#ggsave("C:/Users/Alberto/Documents/itn100results/R_output/unselective/ind/i3.pdf", p, useDingbats=FALSE )
+
+
+
+# lines(newx$bin,predict(fitExperiment,newdata=newx)) # I do realize it's actually the exact same stuff I did
+# 
+# qplot(ensemble$ln_length,ensemble$ln_freq, geom='smooth', method = "lm", 
+#       formula = y ~ x + I(x^2), span=1)+
+#         geom_point()
+# 
+# 
+# 
+# 
+# 
+# #lin_extra <- lm(ensemble$ln_freq~ensemble$ln_length)
+# pol_extra <- lm(ensemble$ln_freq~ensemble$ln_length+I(ensemble$ln_length^2)) # fit model to the MEAN freq-class
+# pol_extraCube <- lm(ensemble$ln_freq~ensemble$ln_length+I(ensemble$ln_length^2)++I(ensemble$ln_length^3))
+# summary(pol_extra)
+# coefs_extra <- as.numeric(coef(pol_extra)) # extracts the coefficients of the quadratic model
+# coefs_extraCube <- as.numeric(coef(pol_extraCube)) # extracts the coefficients of the quadratic model
+# length_extra <- ensemble$ln_length
+# fitting2 <- function(length_extra){coefs_extra[1]+coefs_extra[2]*length_extra+coefs_extra[3]*length_extra^2} # stores the function
+# fittingCube <- function(ln_length){coefs_extraCube[1]+coefs_extraCube[2]*ln_length+
+#                                            coefs_extraCube[3]*ln_length^2+coefs_extraCube[4]*ln_length^3} # stores the function
+# 
+# #fitting2 <- spectrum built on the new curve instead
+# 
+# # ggplotter
+# 
+# gplot <- ggplot(ensemble, aes(x=ln_length, y=ln_freq))+
+#         geom_point(shape=1)+
+#         stat_function(fun = fitting2, geom="line", colour = "blue")+
+#         scale_x_continuous("ln(weight class [20g])", breaks=seq(0,11,1),
+#                            limits=c(0,11), labels=c(0:11))+
+#         scale_y_continuous(name="ln(number of individuals)", 
+#                            limits=c(0,12),
+#                            breaks=c(0:12))+
+#         #labs(title="Community weight spectrum")+
+#         theme(panel.background = element_rect(fill = 'white'))+
+#         #theme
+#         theme_bw()+
+#         theme(panel.grid.minor = element_blank(), 
+#               panel.grid.major = element_line(linetype="dashed"))+
+#         theme(plot.title = element_text(size=14, vjust=2))+
+#         theme(axis.title.x = element_text(size=12,vjust=-0.5),
+#               axis.title.y = element_text(size=12,vjust=0.5))+
+#         theme(axis.text.x=element_text(size=12))+
+#         theme(axis.text.y=element_text(size=12))
+# 
+# gplot
 
 #ggsave("C:/Users/Alberto/Documents/MASTER THESIS/testOutput/test12072015/Community weight spectrum_selective500_10.pdf", gplot, useDingbats=FALSE )

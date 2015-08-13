@@ -6,8 +6,8 @@
 library(ggplot2)
 library(scales)
 library(reshape2)
-setwd("C:/Users/Alberto/Documents/MASTER THESIS/prototype")
-data <- read.csv("start_total.prototype.csv", header=T, sep="\t")
+setwd("C:/Users/Alberto/Documents/itn100results/unselective_i1/tot")
+data <- read.csv("0000_total.csv", header=T, sep="\t")
 normal_scientific<-expression(0,10,10^2,10^3,10^4)
 data <- melt(data, id.vars="steps.")
 p<-ggplot(subset(data, variable=="class1." | variable=="class2." | variable== "class3." | variable== "class4." | variable== "class5."),
