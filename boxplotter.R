@@ -38,9 +38,9 @@ size500_i3$Scen <- rep("S500_I3", nrow(size500_i3))
 class_i1$Scen <- rep("C_I1", nrow(class_i1))
 class_i2$Scen <- rep("C_I2", nrow(class_i2))
 class_i3$Scen <- rep("C_I3", nrow(class_i3))
-mixed_i1$Scen <- rep("M_I1", nrow(mixed_i1))
-mixed_i2$Scen <- rep("M_I2", nrow(mixed_i2))
-mixed_i3$Scen <- rep("M_I3", nrow(mixed_i3))
+mixed_i1$Scen <- rep("M500_I1", nrow(mixed_i1))
+mixed_i2$Scen <- rep("M500_I2", nrow(mixed_i2))
+mixed_i3$Scen <- rep("M500_I3", nrow(mixed_i3))
 
 #extra scenarios
 
@@ -82,12 +82,14 @@ unselective <- rbind(resultsBase, unselective_i1, unselective_i2, unselective_i3
                      mixed_i1, mixed_i2, mixed_i3,
                      size250_i1, size250_i2, size250_i3,
                      mixed250_i1, mixed250_i2, mixed250_i3)
+unselective$Scen <- factor(unselective$Scen, levels = unselective$Scen) # keep it good for other plots
+
 
 # boxplot generic all the scenarios together, good representation, then scale down to interesting
 # things (implying there are interesting things)
 
 box <- ggplot(unselective, aes(x=Scen, y=x, fill=Group, factor=Scen))+
-        geom_boxplot()+
+        geom_boxplot(outlier.shape = 1)+
         theme(panel.background = element_rect(fill = 'white'))+
         scale_x_discrete(name="Scenario")+
         scale_y_continuous(name="Evenness index",
@@ -100,7 +102,10 @@ box <- ggplot(unselective, aes(x=Scen, y=x, fill=Group, factor=Scen))+
         theme(axis.title.x = element_text(size=12,vjust=-0.5),
               axis.title.y = element_text(size=12,vjust=0.5))+
         theme(axis.text.x=element_text(size=12, angle=45, hjust=1))+
-        theme(axis.text.y=element_text(size=12))
+        theme(axis.text.y=element_text(size=12))+
+        stat_boxplot(geom = "errorbar", stat_params = list(width = 0.5))+
+        geom_boxplot(outlier.shape = 1)
+        
 box
 
 ggsave("C:/Users/Alberto/Documents/MASTER THESIS/results/R_output/evennessIndex/boxplot_tot.pdf", box, useDingbats=FALSE)
@@ -112,9 +117,9 @@ ggsave("C:/Users/Alberto/Documents/MASTER THESIS/results/R_output/evennessIndex/
 #########################################################################################
 
 boxI1 <- ggplot(subset(unselective, Scen=="Base" | Scen=="U_I1" | Scen=="S500_I1" |
-                               Scen=="C_I1" | Scen=="M_I1"),
+                               Scen=="C_I1" | Scen=="M500_I1"),
                 aes(x=Scen, y=x, factor=Scen))+
-        geom_boxplot()+
+        geom_boxplot(outlier.shape = 1)+
         theme(panel.background = element_rect(fill = 'white'))+
         scale_x_discrete(name="Scenario")+
         scale_y_continuous(name="Evenness index",
@@ -128,7 +133,9 @@ boxI1 <- ggplot(subset(unselective, Scen=="Base" | Scen=="U_I1" | Scen=="S500_I1
         theme(axis.title.x = element_text(size=12,vjust=-0.5),
               axis.title.y = element_text(size=12,vjust=0.5))+
         theme(axis.text.x=element_text(size=12))+
-        theme(axis.text.y=element_text(size=12))
+        theme(axis.text.y=element_text(size=12))+
+        stat_boxplot(geom = "errorbar", stat_params = list(width = 0.2))+
+        geom_boxplot(outlier.shape = 1)
 boxI1
 
 ggsave("C:/Users/Alberto/Documents/MASTER THESIS/results/R_output/evennessIndex/boxI1.pdf", boxI1, useDingbats=FALSE)
@@ -137,9 +144,9 @@ ggsave("C:/Users/Alberto/Documents/MASTER THESIS/results/R_output/evennessIndex/
 #########################################################################################
 
 boxI3 <- ggplot(subset(unselective, Scen=="Base" | Scen=="U_I3" | Scen=="S500_I3" |
-                               Scen=="C_I3" | Scen=="M_I3"),
+                               Scen=="C_I3" | Scen=="M500_I3"),
                 aes(x=Scen, y=x, factor=Scen))+
-        geom_boxplot()+
+        geom_boxplot(outlier.shape = 1)+
         theme(panel.background = element_rect(fill = 'white'))+
         scale_x_discrete(name="Scenario")+
         scale_y_continuous(name="Evenness index",
@@ -153,7 +160,9 @@ boxI3 <- ggplot(subset(unselective, Scen=="Base" | Scen=="U_I3" | Scen=="S500_I3
         theme(axis.title.x = element_text(size=12,vjust=-0.5),
               axis.title.y = element_text(size=12,vjust=0.5))+
         theme(axis.text.x=element_text(size=12))+
-        theme(axis.text.y=element_text(size=12))
+        theme(axis.text.y=element_text(size=12))+
+        stat_boxplot(geom = "errorbar", stat_params = list(width = 0.2))+
+        geom_boxplot(outlier.shape = 1)
 boxI3
 
 ggsave("C:/Users/Alberto/Documents/MASTER THESIS/results/R_output/evennessIndex/boxI3.pdf", boxI3, useDingbats=FALSE)
@@ -162,9 +171,10 @@ ggsave("C:/Users/Alberto/Documents/MASTER THESIS/results/R_output/evennessIndex/
 #########################################################################################
 
 boxUvsM <- ggplot(subset(unselective, Scen=="U_I1" | Scen=="U_I2" | Scen=="U_I3" |
-                               Scen=="M_I1" | Scen=="M_I2" |Scen=="M_I3"),
+                               Scen=="M500_I1" | Scen=="M500_I2" |Scen=="M500_I3"),
                 aes(x=Scen, y=x, fill=Group, factor=Scen))+
-        geom_boxplot()+
+        geom_boxplot(outlier.shape = 1)+
+        scale_fill_manual(values=c("white", "grey"))+
         theme(panel.background = element_rect(fill = 'white'))+
         scale_x_discrete(name="Scenario")+
         scale_y_continuous(name="Evenness index",
@@ -177,8 +187,10 @@ boxUvsM <- ggplot(subset(unselective, Scen=="U_I1" | Scen=="U_I2" | Scen=="U_I3"
         theme(plot.title = element_text(size=14, vjust=2))+
         theme(axis.title.x = element_text(size=12,vjust=-0.5),
               axis.title.y = element_text(size=12,vjust=0.5))+
-        theme(axis.text.x=element_text(size=12))+
-        theme(axis.text.y=element_text(size=12))
+        theme(axis.text.x=element_text(size=12, angle=45, hjust=1))+
+        theme(axis.text.y=element_text(size=12))+
+        stat_boxplot(geom = "errorbar", stat_params = list(width = 0.2))+
+        geom_boxplot(outlier.shape = 1)
 boxUvsM
 
 ggsave("C:/Users/Alberto/Documents/MASTER THESIS/results/R_output/evennessIndex/boxUvsM.pdf", boxUvsM, useDingbats=FALSE)
@@ -188,7 +200,8 @@ ggsave("C:/Users/Alberto/Documents/MASTER THESIS/results/R_output/evennessIndex/
 boxS500vsS250 <- ggplot(subset(unselective, Scen=="S500_I1" | Scen=="S500_I2" | Scen=="S500_I3" |
                                  Scen=="S250_I1" | Scen=="S250_I2" |Scen=="S250_I3"),
                   aes(x=Scen, y=x, fill=Group, factor=Scen))+
-        geom_boxplot()+
+        geom_boxplot(outlier.shape = 1)+
+        scale_fill_manual(values=c("white", "grey"))+
         theme(panel.background = element_rect(fill = 'white'))+
         scale_x_discrete(name="Scenario")+
         scale_y_continuous(name="Evenness index",
@@ -201,18 +214,22 @@ boxS500vsS250 <- ggplot(subset(unselective, Scen=="S500_I1" | Scen=="S500_I2" | 
         theme(plot.title = element_text(size=14, vjust=2))+
         theme(axis.title.x = element_text(size=12,vjust=-0.5),
               axis.title.y = element_text(size=12,vjust=0.5))+
-        theme(axis.text.x=element_text(size=12))+
-        theme(axis.text.y=element_text(size=12))
+        theme(axis.text.x=element_text(size=12, angle=45, hjust=1))+
+        theme(axis.text.y=element_text(size=12))+
+        stat_boxplot(geom = "errorbar", stat_params = list(width = 0.2))+
+        geom_boxplot(outlier.shape = 1)
+
 boxS500vsS250
 
 ggsave("C:/Users/Alberto/Documents/MASTER THESIS/results/R_output/evennessIndex/boxS500vsS250.pdf", boxS500vsS250, useDingbats=FALSE)
 
 #########################################################################################
 
-boxM500vsM250 <- ggplot(subset(unselective, Scen=="M_I1" | Scen=="M_I2" | Scen=="M_I3" |
+boxM500vsM250 <- ggplot(subset(unselective, Scen=="M500_I1" | Scen=="M500_I2" | Scen=="M500_I3" |
                                        Scen=="M250_I1" | Scen=="M250_I2" |Scen=="M250_I3"),
                         aes(x=Scen, y=x, fill=Group, factor=Scen))+
-        geom_boxplot()+
+        geom_boxplot(outlier.shape = 1)+
+        scale_fill_manual(values=c("white", "grey"))+
         theme(panel.background = element_rect(fill = 'white'))+
         scale_x_discrete(name="Scenario")+
         scale_y_continuous(name="Evenness index",
@@ -225,8 +242,11 @@ boxM500vsM250 <- ggplot(subset(unselective, Scen=="M_I1" | Scen=="M_I2" | Scen==
         theme(plot.title = element_text(size=14, vjust=2))+
         theme(axis.title.x = element_text(size=12,vjust=-0.5),
               axis.title.y = element_text(size=12,vjust=0.5))+
-        theme(axis.text.x=element_text(size=12))+
-        theme(axis.text.y=element_text(size=12))
+        theme(axis.text.x=element_text(size=12, angle=45, hjust=1))+
+        theme(axis.text.y=element_text(size=12))+
+        stat_boxplot(geom = "errorbar", stat_params = list(width = 0.2))+
+        geom_boxplot(outlier.shape = 1)
+
 boxM500vsM250
 
 ggsave("C:/Users/Alberto/Documents/MASTER THESIS/results/R_output/evennessIndex/boxM500vsM250.pdf", boxM500vsM250, useDingbats=FALSE)
@@ -245,6 +265,7 @@ ggsave("C:/Users/Alberto/Documents/MASTER THESIS/results/R_output/evennessIndex/
 dens <- ggplot(unselective, aes(x=x, colour=Scen))+
         geom_density()+
         theme(panel.background = element_rect(fill = 'white'))+
+        guides(colour=guide_legend(ncol=2))+
         scale_x_continuous(name="Evenness index",
                            breaks=seq(1,2.7,.1))+
         scale_y_continuous(name="Density",
@@ -270,8 +291,8 @@ densI1 <- ggplot(subset(unselective, Scen=="Base" | Scen=="U_I1" | Scen=="S500_I
         geom_density()+
         theme(panel.background = element_rect(fill = 'white'))+
         scale_x_continuous(name="Evenness index",
-                           limits=c(1.0,2.7),
-                           breaks=seq(1,2.7,.1))+
+                           limits=c(1.0,2.8),
+                           breaks=seq(1,2.8,.2))+
         scale_y_continuous(name="Density",
                            limit=c(0,7),
                            breaks=seq(1,7,1))+
@@ -296,8 +317,8 @@ densI3 <- ggplot(subset(unselective, Scen=="Base" | Scen=="U_I3" | Scen=="S500_I
         geom_density()+
         theme(panel.background = element_rect(fill = 'white'))+
         scale_x_continuous(name="Evenness index",
-                           limits=c(1.0,2.7),
-                           breaks=seq(1,2.7,.1))+
+                           limits=c(1.0,2.8),
+                           breaks=seq(1,2.8,.2))+
         scale_y_continuous(name="Density",
                            limit=c(0,7),
                            breaks=seq(1,7,1))+
@@ -319,13 +340,13 @@ ggsave("C:/Users/Alberto/Documents/MASTER THESIS/results/R_output/evennessIndex/
 #########################################################################################
 
 densUvsM <- ggplot(subset(unselective, Scen=="U_I1" | Scen=="U_I2" | Scen=="U_I3" |
-                                Scen=="M_I1" | Scen=="M_I2" |Scen=="M_I3"),
+                                Scen=="M500_I1" | Scen=="M500_I2" |Scen=="M500_I3"),
                  aes(x=x, colour=Scen))+
         geom_density()+
         theme(panel.background = element_rect(fill = 'white'))+
         scale_x_continuous(name="Evenness index",
-                           limits=c(1.0,2.7),
-                           breaks=seq(1,2.7,.1))+
+                           limits=c(1.0,2.8),
+                           breaks=seq(1,2.8,.2))+
         scale_y_continuous(name="Density",
                            limit=c(0,7),
                            breaks=seq(1,7,1))+
@@ -351,8 +372,8 @@ densS500vsS250 <- ggplot(subset(unselective, Scen=="S500_I1" | Scen=="S500_I2" |
         geom_density()+
         theme(panel.background = element_rect(fill = 'white'))+
         scale_x_continuous(name="Evenness index",
-                           limits=c(1.0,2.7),
-                           breaks=seq(1,2.7,.1))+
+                           limits=c(1.0,2.8),
+                           breaks=seq(1,2.8,.2))+
         scale_y_continuous(name="Density",
                            limit=c(0,7),
                            breaks=seq(1,7,1))+
@@ -372,14 +393,14 @@ ggsave("C:/Users/Alberto/Documents/MASTER THESIS/results/R_output/evennessIndex/
 
 #########################################################################################
 
-densM500vsM250 <- ggplot(subset(unselective, Scen=="M_I1" | Scen=="M_I2" | Scen=="M_I3" |
+densM500vsM250 <- ggplot(subset(unselective, Scen=="M500_I1" | Scen=="M500_I2" | Scen=="M500_I3" |
                                         Scen=="M250_I1" | Scen=="M250_I2" |Scen=="M250_I3"),
                          aes(x=x, colour=Scen))+
         geom_density()+
         theme(panel.background = element_rect(fill = 'white'))+
         scale_x_continuous(name="Evenness index",
-                           limits=c(1.0,2.7),
-                           breaks=seq(1,2.7,.1))+
+                           limits=c(1.0,2.8),
+                           breaks=seq(1,2.8,.2))+
         scale_y_continuous(name="Density",
                            limit=c(0,7),
                            breaks=seq(1,7,1))+

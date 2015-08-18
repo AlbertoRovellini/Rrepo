@@ -13,7 +13,7 @@ list<-list.files("C:/Users/Alberto/Documents/itn100results/mixed250_i3/tot",
                  recursive=TRUE, pattern="*.csv") # lists all the file (might need to change to .csv)
 length.list<-length(list)
 read.special<-function(x) {
-        read.table(x, header=FALSE, sep='\t', dec='.', skip=1902) # custom function to read the batches of .csv keeping the header
+        read.table(x, header=FALSE, sep='\t', dec='.', skip=1902, nrow=100) # custom function to read the batches of .csv keeping the header
 }
 data_list <- lapply(list, read.special)
 mean_list <- lapply(data_list, colMeans) # average over the last 100 steps

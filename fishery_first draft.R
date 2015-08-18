@@ -3,8 +3,8 @@
 
 library(ggplot2)
 library(reshape)
-setwd("C:/Users/Alberto/Documents/itn100results/size250_i3/fish")
-list<-list.files("C:/Users/Alberto/Documents/itn100results/size250_i3/fish", 
+setwd("C:/Users/Alberto/Documents/itn100results/mixed250_i3/fish")
+list<-list.files("C:/Users/Alberto/Documents/itn100results/mixed250_i3/fish", 
                  recursive=TRUE, pattern=".csv*") # lists all the file (might need to change to .csv)
 length.list<-length(list)
 read.special<-function(x) {
@@ -81,4 +81,4 @@ p<-ggplot(subset(meltAll,variable=="Smallpelagic" | variable=="Mediumpelagic" |
 p
 
 
-ggsave("C:/Users/Alberto/Documents/itn100results/R_output/size250/fish/i3.pdf", p, useDingbats=FALSE )
+ggsave("C:/Users/Alberto/Documents/MASTER THESIS/results/R_output/fishery/mixed250_I3.pdf", p, useDingbats=FALSE)

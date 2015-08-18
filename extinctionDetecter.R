@@ -1,9 +1,9 @@
 # extinction detecter, because why not
 
-setwd("C:/Users/Alberto/Documents/itn100results/mixed250_i3/tot")
+setwd("C:/Users/Alberto/Documents/itn100results/unselective_I3/tot")
 library(abind)
 library(reshape)
-list<-list.files("C:/Users/Alberto/Documents/itn100results/mixed250_i3/tot", 
+list<-list.files("C:/Users/Alberto/Documents/itn100results/unselective_I3/tot", 
                  recursive=TRUE, pattern="*.csv") #the key is the recursive argument
 length.list<-length(list)
 read.special<-function(x) {
@@ -15,8 +15,8 @@ for (i in c(1:length.list)) { # should become a plyr function
         matcol[[i]]<-data_list[[i]][,c(4,6,8,10,12,14,20)] # list of matrix containing data of interest: time and classes for each .csv
 }
 
-extinctionDetector <- function(x) {
-        if (sum((colSums(x==0)!=0))) {"extinction"}else{"stable"}
+extinctionDetector <- function(x) { # whaaaaat
+        if (sum(colSums(x==0)!=0)) {"extinction"}else{"stable"}
 }
 fails <- unlist(lapply(matcol, extinctionDetector))
 fails <- length(subset(fails, fails=="extinction"))
