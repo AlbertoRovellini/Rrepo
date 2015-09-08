@@ -3,7 +3,7 @@
 library(ggplot2)
 setwd("C:/Users/Alberto/Documents/itn100results/input/sizeSpectrumInput")
 parameters <- read.table("parametersLin.csv", header=TRUE, sep=';', dec='.', row.names=1)[,c(1,2)]
-x <- seq(3,11,length=10)
+x <- seq(3,15,length=1000)
 
 # even more retarded, congrats
 
@@ -22,7 +22,7 @@ M500_I2 <- function(x){parameters[12,1]*x+parameters[12,2]}
 M500_I3 <- function(x){parameters[13,1]*x+parameters[13,2]}
 S250_I1 <- function(x){parameters[14,1]*x+parameters[14,2]}
 S250_I2 <- function(x){parameters[15,1]*x+parameters[15,2]}
-S250_I3 <- function(x){parameters[11,1]*x+parameters[11,2]}
+S250_I3 <- function(x){parameters[16,1]*x+parameters[16,2]}
 M250_I1 <- function(x){parameters[17,1]*x+parameters[17,2]}
 M250_I2 <- function(x){parameters[18,1]*x+parameters[18,2]}
 M250_I3 <- function(x){parameters[19,1]*x+parameters[19,2]}
@@ -63,10 +63,10 @@ totalPlot <- ggplot(data=subset(total, Regime=="Base" | Regime=="U_I1"| Regime==
                         | Regime=="C_I2"| Regime=="C_I3"| Regime=="M500_I1"| Regime=="M500_I2"
                         | Regime=="M500_I3"| Regime=="S250_I1"| Regime=="S250_I2"| Regime=="S250_I3"
                         | Regime=="M250_I1"| Regime=="M250_I2"| Regime=="M250_I3"), 
-            aes(x=x, y=y, linetype=Regime))+
+            aes(x=x, y=y, color=Regime))+
         geom_line(size=0.7)+
-        scale_x_continuous("ln(weight class [20g])", breaks=seq(2,11,1),
-         limits=c(2.99,10), labels=c(2:11))+
+        scale_x_continuous("ln(weight class [20g])", breaks=seq(0,15,1),
+         limits=c(0,15), labels=c(0:15))+
         scale_y_continuous(name="ln(number of individuals)", 
                            limits=c(0,11),
                            breaks=c(0:11))+
@@ -86,13 +86,15 @@ totalPlot
 
 I1Comp <- ggplot(data=subset(total, Regime=="Base" | Regime=="U_I1"| Regime=="S500_I1"| Regime=="C_I1"
                              | Regime=="M500_I1"| Regime=="S250_I1"| Regime=="M250_I1"), 
-                 aes(x=x, y=y, linetype=Regime))+
-        geom_line(size=0.7)+
+                 aes(x=x, y=y, color=Regime))+
+        geom_line(size=1)+
         scale_x_continuous("ln(weight class [20g])", breaks=seq(2,11,1),
                            limits=c(2.99,10), labels=c(2:11))+
         scale_y_continuous(name="ln(number of individuals)", 
                            limits=c(0,11),
                            breaks=c(0:11))+
+        scale_colour_manual(name="Regime",
+                            values=c("#377EB8", "#E41A1C", "#4DAF4A","#FF7F00","#984EA3","#999999","#F781BF"))+
         #labs(title="Community weight spectrum")+
         theme(panel.background = element_rect(fill = 'white'))+
         #theme
@@ -110,13 +112,15 @@ ggsave("C:/Users/Alberto/Documents/MASTER THESIS/results/graphics/spectra/I1Comp
 
 I2Comp <- ggplot(data=subset(total, Regime=="Base" | Regime=="U_I2"| Regime=="S500_I2"| Regime=="C_I2"| Regime=="M500_I2"
                                 | Regime=="S250_I2"| Regime=="M250_I2"), 
-                    aes(x=x, y=y, linetype=Regime))+
-        geom_line(size=0.7)+
+                    aes(x=x, y=y, color=Regime))+
+        geom_line(size=1)+
         scale_x_continuous("ln(weight class [20g])", breaks=seq(2,11,1),
                            limits=c(2.99,10), labels=c(2:11))+
         scale_y_continuous(name="ln(number of individuals)", 
                            limits=c(0,11),
                            breaks=c(0:11))+
+        scale_colour_manual(name="Regime",
+                            values=c("#377EB8", "#E41A1C", "#4DAF4A","#FF7F00","#984EA3","#999999","#F781BF"))+
         #labs(title="Community weight spectrum")+
         theme(panel.background = element_rect(fill = 'white'))+
         #theme
@@ -136,13 +140,15 @@ ggsave("C:/Users/Alberto/Documents/MASTER THESIS/results/graphics/spectra/I2Comp
 I3Comp <- ggplot(data=subset(total, Regime=="Base" | Regime=="U_I3"
                                 | Regime=="S500_I3"| Regime=="C_I3"| Regime=="M500_I3"| Regime=="S250_I3"
                                 | Regime=="M250_I3"), 
-                    aes(x=x, y=y, linetype=Regime))+
-        geom_line(size=0.7)+
+                    aes(x=x, y=y, color=Regime))+
+        geom_line(size=1)+
         scale_x_continuous("ln(weight class [20g])", breaks=seq(2,11,1),
                            limits=c(2.99,10), labels=c(2:11))+
         scale_y_continuous(name="ln(number of individuals)", 
                            limits=c(0,11),
                            breaks=c(0:11))+
+        scale_colour_manual(name="Regime",
+                            values=c("#377EB8", "#E41A1C", "#4DAF4A","#FF7F00","#984EA3","#999999","#F781BF"))+
         #labs(title="Community weight spectrum")+
         theme(panel.background = element_rect(fill = 'white'))+
         #theme
@@ -161,7 +167,7 @@ ggsave("C:/Users/Alberto/Documents/MASTER THESIS/results/graphics/spectra/I3Comp
 
 UComp <- ggplot(data=subset(total, Regime=="Base" | Regime=="U_I1"| Regime=="U_I2"| Regime=="U_I3"), 
                     aes(x=x, y=y, linetype=Regime))+
-        geom_line(size=0.7)+
+        geom_line(size=1)+
         scale_x_continuous("ln(weight class [20g])", breaks=seq(2,11,1),
                            limits=c(2.99,10), labels=c(2:11))+
         scale_y_continuous(name="ln(number of individuals)", 
@@ -306,7 +312,25 @@ M250Comp
 ggsave("C:/Users/Alberto/Documents/MASTER THESIS/results/graphics/spectra/M250Comp.pdf", M250Comp, useDingbats=FALSE)
 
 
-
-
-
-
+testerino <- S500_I3
+colnames(testerino) <- c("x","y","reg")
+testerino
+plotino <- ggplot(data=testerino, aes(x=x, y=y))+
+        geom_line()+
+        scale_x_continuous("ln(weight class [20g])", breaks=seq(2,11,1),
+                           limits=c(2.99,10), labels=c(2:11))+
+        scale_y_continuous(name="ln(number of individuals)", 
+                           limits=c(0,11),
+                           breaks=c(0:11))+
+        #labs(title="Community weight spectrum")+
+        theme(panel.background = element_rect(fill = 'white'))+
+        #theme
+        theme_bw()+
+        theme(panel.grid.minor = element_blank(), 
+              panel.grid.major = element_line(linetype="dashed"))+
+        theme(plot.title = element_text(size=14, vjust=2))+
+        theme(axis.title.x = element_text(size=12,vjust=-0.5),
+              axis.title.y = element_text(size=12,vjust=0.5))+
+        theme(axis.text.x=element_text(size=12))+
+        theme(axis.text.y=element_text(size=12))
+plotino

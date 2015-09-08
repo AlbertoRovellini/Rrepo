@@ -1,7 +1,7 @@
 # boxplotter(plusothershitter). 12/08/2015 AR SPACE PROGRAM AYY LMAO
 
 library("ggplot2")
-setwd("C:/Users/Alberto/Documents/itn100results/boxplotInput")
+setwd("C:/Users/Alberto/Documents/itn100results/input/boxplotInput")
 
 resultsBase <- read.table("resultsBase.csv", header=TRUE, sep=' ', dec='.') # mind the sep plz
 unselective_i1 <- read.table("unselective_i1.csv", header=TRUE, sep=' ', dec='.')
@@ -82,18 +82,32 @@ unselective <- rbind(resultsBase, unselective_i1, unselective_i2, unselective_i3
                      mixed_i1, mixed_i2, mixed_i3,
                      size250_i1, size250_i2, size250_i3,
                      mixed250_i1, mixed250_i2, mixed250_i3)
-unselective$Scen <- factor(unselective$Scen, levels = unselective$Scen) # keep it good for other plots
+unselective$index <- c(rep(1, nrow(unselective[unselective$Group=="Base",])),
+                       rep(2, nrow(unselective[unselective$Group=="Unselective",])),
+                       rep(3, nrow(unselective[unselective$Group=="Size (500g)",])),
+                       rep(4, nrow(unselective[unselective$Group=="Class",])),
+                       rep(5, nrow(unselective[unselective$Group=="Size and class (500g)",])),
+                       rep(6, nrow(unselective[unselective$Group=="Size (250g)",])), 
+                       rep(7, nrow(unselective[unselective$Group=="Size and class (250g)",]))) 
+unselective <- unselective[order(unselective$index),]
+unselective$Scen <- factor(unselective$Scen, levels = unique(unselective$Scen)) # keep it good for other plots
 
 
 # boxplot generic all the scenarios together, good representation, then scale down to interesting
 # things (implying there are interesting things)
 
-box <- ggplot(unselective, aes(x=Scen, y=x, fill=Group, factor=Scen))+
+box <- ggplot(unselective, aes(x=Scen, y=x, color=Group, factor=Scen))+
         geom_boxplot(outlier.shape = 1)+
         theme(panel.background = element_rect(fill = 'white'))+
         scale_x_discrete(name="Scenario")+
         scale_y_continuous(name="Evenness index",
                            breaks=seq(1,2.7, .1))+
+        # the order of the colors here is manual to prevent ggplot from messing up
+        scale_color_manual(name="Selectivity regime",
+                          values=c("#377EB8","#FF7F00","#999999","#4DAF4A",
+                                   "#F781BF","#984EA3","#E41A1C"), 
+                          breaks=c("Base","Unselective","Size (500g)", "Class", "Size and class (500g)",
+                                   "Size (250g)", "Size and class (250g)"))+
         #theme
         theme_bw()+
         theme(panel.grid.minor = element_blank(), 
@@ -117,14 +131,20 @@ ggsave("C:/Users/Alberto/Documents/MASTER THESIS/results/R_output/evennessIndex/
 #########################################################################################
 
 boxI1 <- ggplot(subset(unselective, Scen=="Base" | Scen=="U_I1" | Scen=="S500_I1" |
-                               Scen=="C_I1" | Scen=="M500_I1"),
-                aes(x=Scen, y=x, factor=Scen))+
+                               Scen=="C_I1" | Scen=="M500_I1" | Scen=="S250_I1" |
+                               Scen=="M250_I1"),
+                aes(x=Scen, y=x, color=Group, factor=Scen))+
         geom_boxplot(outlier.shape = 1)+
         theme(panel.background = element_rect(fill = 'white'))+
         scale_x_discrete(name="Scenario")+
         scale_y_continuous(name="Evenness index",
                            limits=c(1.0,2.7),
                            breaks=seq(1,2.7, .1))+
+        scale_color_manual(name="Selectivity regime",
+                           values=c("#377EB8","#FF7F00","#999999","#4DAF4A",
+                                    "#F781BF","#984EA3","#E41A1C"), 
+                           breaks=c("Base","Unselective","Size (500g)", "Class", "Size and class (500g)",
+                                    "Size (250g)", "Size and class (250g)"))+
         #theme
         theme_bw()+
         theme(panel.grid.minor = element_blank(), 
@@ -132,7 +152,7 @@ boxI1 <- ggplot(subset(unselective, Scen=="Base" | Scen=="U_I1" | Scen=="S500_I1
         theme(plot.title = element_text(size=14, vjust=2))+
         theme(axis.title.x = element_text(size=12,vjust=-0.5),
               axis.title.y = element_text(size=12,vjust=0.5))+
-        theme(axis.text.x=element_text(size=12))+
+        theme(axis.text.x=element_text(size=12, angle=45, hjust=1))+
         theme(axis.text.y=element_text(size=12))+
         stat_boxplot(geom = "errorbar", stat_params = list(width = 0.2))+
         geom_boxplot(outlier.shape = 1)
@@ -143,15 +163,21 @@ ggsave("C:/Users/Alberto/Documents/MASTER THESIS/results/R_output/evennessIndex/
 
 #########################################################################################
 
-boxI3 <- ggplot(subset(unselective, Scen=="Base" | Scen=="U_I3" | Scen=="S500_I3" |
-                               Scen=="C_I3" | Scen=="M500_I3"),
-                aes(x=Scen, y=x, factor=Scen))+
+boxI2 <- ggplot(subset(unselective, Scen=="Base" | Scen=="U_I2" | Scen=="S500_I2" |
+                               Scen=="C_I2" | Scen=="M500_I2" | Scen=="S250_I2" |
+                               Scen=="M250_I2"),
+                aes(x=Scen, y=x, color=Group, factor=Scen))+
         geom_boxplot(outlier.shape = 1)+
         theme(panel.background = element_rect(fill = 'white'))+
         scale_x_discrete(name="Scenario")+
         scale_y_continuous(name="Evenness index",
                            limits=c(1.0,2.7),
                            breaks=seq(1,2.7, .1))+
+        scale_color_manual(name="Selectivity regime",
+                           values=c("#377EB8","#FF7F00","#999999","#4DAF4A",
+                                    "#F781BF","#984EA3","#E41A1C"), 
+                           breaks=c("Base","Unselective","Size (500g)", "Class", "Size and class (500g)",
+                                    "Size (250g)", "Size and class (250g)"))+
         #theme
         theme_bw()+
         theme(panel.grid.minor = element_blank(), 
@@ -159,7 +185,42 @@ boxI3 <- ggplot(subset(unselective, Scen=="Base" | Scen=="U_I3" | Scen=="S500_I3
         theme(plot.title = element_text(size=14, vjust=2))+
         theme(axis.title.x = element_text(size=12,vjust=-0.5),
               axis.title.y = element_text(size=12,vjust=0.5))+
-        theme(axis.text.x=element_text(size=12))+
+        theme(axis.text.x=element_text(size=12, angle=45, hjust=1))+
+        theme(axis.text.y=element_text(size=12))+
+        stat_boxplot(geom = "errorbar", stat_params = list(width = 0.2))+
+        geom_boxplot(outlier.shape = 1)
+
+boxI2
+
+ggsave("C:/Users/Alberto/Documents/MASTER THESIS/results/R_output/evennessIndex/boxI2.pdf", boxI2, useDingbats=FALSE)
+
+
+#########################################################################################
+
+
+boxI3 <- ggplot(subset(unselective, Scen=="Base" | Scen=="U_I3" | Scen=="S500_I3" |
+                               Scen=="C_I3" | Scen=="M500_I3" | Scen=="S250_I3" |
+                               Scen=="M250_I3"),
+                aes(x=Scen, y=x, color=Group, factor=Scen))+
+        geom_boxplot(outlier.shape = 1)+
+        theme(panel.background = element_rect(fill = 'white'))+
+        scale_x_discrete(name="Scenario")+
+        scale_y_continuous(name="Evenness index",
+                           limits=c(1.0,2.7),
+                           breaks=seq(1,2.7, .1))+
+        scale_color_manual(name="Selectivity regime",
+                           values=c("#377EB8","#FF7F00","#999999","#4DAF4A",
+                                    "#F781BF","#984EA3","#E41A1C"), 
+                           breaks=c("Base","Unselective","Size (500g)", "Class", "Size and class (500g)",
+                                    "Size (250g)", "Size and class (250g)"))+
+        #theme
+        theme_bw()+
+        theme(panel.grid.minor = element_blank(), 
+              panel.grid.major = element_line(linetype="dashed"))+
+        theme(plot.title = element_text(size=14, vjust=2))+
+        theme(axis.title.x = element_text(size=12,vjust=-0.5),
+              axis.title.y = element_text(size=12,vjust=0.5))+
+        theme(axis.text.x=element_text(size=12, angle=45, hjust=1))+
         theme(axis.text.y=element_text(size=12))+
         stat_boxplot(geom = "errorbar", stat_params = list(width = 0.2))+
         geom_boxplot(outlier.shape = 1)

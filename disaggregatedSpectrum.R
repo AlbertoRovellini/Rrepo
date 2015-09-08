@@ -1,13 +1,22 @@
+# 07/09/2015
+
+# script to compute and plot the disaggrgated size spectrum of the community. a frequency-weight bin
+# routine is run on the individual.csv file of every replicate, and the log of the frequencies and
+# the weight bins are computed. then the frequencies are averaged among all the runs.
+# for each bin, in each run, it is also calculated which is the most abundant functional group. this
+# is represented in the plot with the respective colours. among the replicates, the mode (and not the mean)
+# is considered.
+# the linear regression of the spectrum is also plotted, but it's computed in another script.
 
 library(ggplot2)
-setwd("C:/Users/Alberto/Documents/itn100results/resultsBase/ind/demo")
-list<-list.files("C:/Users/Alberto/Documents/itn100results/resultsBase/ind/demo", 
+setwd("C:/Users/Alberto/Documents/itn100results/mixed_i1/ind")
+list<-list.files("C:/Users/Alberto/Documents/itn100results/mixed_i1/ind", 
                  recursive=TRUE, pattern="*.csv") 
 length.list<-length(list)
 read.special<-function(x) {
         read.table(x, header=TRUE, sep='\t', dec=',') # custom function to read the batches of .csv keeping the header
 }
-data_list <- lapply(list, read.special)
+data_list <- lapply(list, read.special) # stores all the files into a huge list
 lastTimeStep <- function(data) subset(data, data$time=="2000.0") # isolates the last time step, comment out for complete analysis
 data_list <- lapply(data_list, lastTimeStep)
 
@@ -15,61 +24,45 @@ frequencies <-function(data) { # function to extract the frequencies for each re
         mass <- data$biomass # isolates the column with biomass. infact, no need to factorize if the spectrum is for the whole
         # community, which still has to be defined anyway
         breaks <- seq(0, ceiling(max(mass))+10, 20) # sets the breaks ranging over the biomass of the individuals
-        length_classes <- c(1, breaks[2:(length(breaks)-1)]) # workaround, not sure if legit yet
-        cat <- cut(mass, breaks, labels=length_classes, include.lowest=TRUE) 
+        length_classes <- c(1, breaks[2:(length(breaks)-1)]) # gets rid of the 0 and of the last value
+        cat <- cut(mass, breaks, labels=length_classes, include.lowest=TRUE) # assigns the biomasses to their bin
         freq <- table(cat)
         freq <- cbind(freq)
-        freq[freq==0] <- NA # turn zeroes to NAs for the sake of the plot
-        freq[freq<3] <- NA # lower limit of resoulution, gets rid of the outliers. kek
+        #freq[freq==0] <- NA # turn zeroes to NAs for the sake of the plot
+        freq[freq<5] <- NA # lower limit of resoulution, gets rid of the outliers
         ln_freq <- log(freq) # lognorm transformation of the frequency data
         ln_length <- log(length_classes) # lognormal transformation of the length classes
         freq_breaks <- data.frame(ln_length, ln_freq)
-        #freq_breaks <- freq_breaks[c(2:nrow(freq_breaks)),]
+        #freq_breaks <- freq_breaks[c(2:nrow(freq_breaks)),] # cuts out the first bin class (1g)
         
 }
 
-classWriter <- function(data) {
+classWriter <- function(data) { # writes the name of the most abundant class per weight bin
         mass <- data$biomass 
-        breaks <- seq(0, ceiling(max(mass))+10, 20) # sets the breaks ranging over the biomass of the individuals
-        length_classes <- c(1, breaks[2:(length(breaks)-1)]) # workaround, not sure if legit yet
-        
-        dataSort <- data[order(data$biomass),]
-        
-        dominantClasses <- list()
-        bin <- list()
-        occurrences <- list()
-        dominant <- numeric(length=length(length_classes))
-        
+        breaks <- seq(0, ceiling(max(mass))+10, 20) # same bins as in the frequencies function
+        length_classes <- c(1, breaks[2:(length(breaks)-1)]) # same again
+        dataSort <- data[order(data$biomass),] # orders the datasets according to the biomass
+        dominantClasses <- list() # prep lists for the loop
+        bin <- list() # prep lists for the loop
+        occurrences <- list() # prep lists for the loop
+        dominant <- numeric(length=length(length_classes)) # prep vec for the loop
         
         for (i in 1:length(length_classes)) { 
-                #for (j in 1:length(length_classes)) {
-                bin[[i]] <- dataSort[dataSort$biomass>length_classes[i]-2 & dataSort$biomass<=length_classes[i],]
+                bin[[i]] <- dataSort[dataSort$biomass>=length_classes[i]-20 & dataSort$biomass<length_classes[i],]
                 occurrences[[i]]<-table(unlist(bin[[i]]$class))
                 if (max(occurrences[[i]])==0) {
                         dominant[[i]] <- NA
                 } else {
                         dominant[i] <- names(occurrences[[i]][(which(occurrences[[i]]==max(occurrences[[i]])))])
                 }
-                #dominant}
         }
         return(dominant)
-        
-#         freq_breaks$dom <- dominant # I don't even know how but somehow apparently I made it
-#         
-#         freq_breaks$dom <- gsub("smallpelagic", 1, freq_breaks[,3])
-#         freq_breaks$dom <- gsub("mediumpelagic", 2, freq_breaks[,3])
-#         freq_breaks$dom <- gsub("largepelagic", 3, freq_breaks[,3])
-#         freq_breaks$dom <- gsub("smalldemersal", 4, freq_breaks[,3])
-#         freq_breaks$dom <- gsub("mediumdemersal", 5, freq_breaks[,3])
-#         freq_breaks$dom <- gsub("largedemersal", 6, freq_breaks[,3])
-#         freq_breaks$dom <- gsub("topcarnivores", 7, freq_breaks[,3])
-#         freq_breaks$dom <- as.numeric(freq_breaks$dom)
         
 }
 
 # plotter region
 
-dominantClasses <- lapply(data_list, classWriter) # first line has a problem, will need to check
+dominantClasses <- lapply(data_list, classWriter) 
 
 freqs <- lapply(data_list, frequencies) 
 
@@ -81,24 +74,25 @@ for (i in 1:length(freqs)) {
 }
 maxlength <- match(max(listbreaks), listbreaks) # extracts the index of the largest break
 runs <- list()
-for (j in 1:length(freqs)) { # what the hell is this???
+for (j in 1:length(freqs)) { 
         runs[[j]] <- freqs[[j]][,2]
         runs[[j]] <- c(runs[[j]], rep(0, max(listbreaks)-length(runs[[j]])))
 }
 
 # same as above for the names
 
+listbreaksClass<-numeric(length=length(freqs))
 for (i in 1:length(dominantClasses)) {
-        listbreaks[i]<-length(dominantClasses[[i]]) 
+        listbreaksClass[i]<-length(dominantClasses[[i]]) 
 }
-maxlength <- match(max(listbreaks), listbreaks) # extracts the index of the largest break
+maxlengthClass <- match(max(listbreaksClass), listbreaksClass) # extracts the index of the largest break
 classNames <- list()
 for (j in 1:length(dominantClasses)) { 
         classNames[[j]] <- dominantClasses[[j]]
-        classNames[[j]] <- c(classNames[[j]], rep(NA, max(listbreaks)-length(classNames[[j]])))
+        classNames[[j]] <- c(classNames[[j]], rep(NA, max(listbreaksClass)-length(classNames[[j]])))
 }
 
-classEnumerator <- function(x) {
+classEnumerator <- function(x) { # function to turn the names of the classes to numbers from 1 to 7
         x <- gsub("smallpelagic", 1, x)
         x <- gsub("mediumpelagic", 2, x)
         x <- gsub("largepelagic", 3, x)
@@ -125,12 +119,19 @@ head(refined[[2]])
 library("abind")
 
 all.matrix <- abind(refined, along=3)
-mean_runs <- apply(all.matrix, c(1,2), mean, na.rm=TRUE) # gotcha
+all.matrix[is.na(all.matrix)] <- 0 # gets rid of NAs, check if legit lol
+mean_runs <- apply(all.matrix, c(1,2), mean) # gotcha
 sd_runs <- apply(all.matrix, c(1,2), sd) # gotcha
 
-Mode <- function(x) { 
-        unlist(which.max(table(x)))
-        
+Mode <- function(x, na.rm=TRUE) { 
+        namesDoms <- names(which(table(x)==max(table(x))))
+        if (length(namesDoms)>1) {
+                namesDoms <- namesDoms[1]
+        } else {
+                namesDoms <- namesDoms
+        }
+        namesDoms
+              
 }
 
 domList <- list() # workaround, creates a list of the dom vectors
@@ -138,64 +139,67 @@ for (i in 1:length(refined)) {
         domList[[i]] <- refined[[i]][,2]
 }
 
-is.integer0 <- function(x) # function to catch the integer(0) elements
-{
-        is.integer(x) && length(x) == 0L
-}
-
 modesDoms <- as.data.frame(abind(domList, along=2)) # binds the dom vectors in a dataframe
-modesDoms[is.na(modesDoms)] <- NaN # turns the NAs in NaNs, actually useless
 
-modesDom <- apply(modesDoms, 1, Mode) # fucks up due to Nas
+modesDom <- apply(modesDoms, 1, Mode) 
 
 modesDomMod <- list()
 for (i in 1:length(modesDom)) {
-        if (is.integer0(modesDom[[i]])==TRUE) {
+        if (is.null(modesDom[[i]])==TRUE) {
                 modesDomMod[[i]] <- NA
         } else { modesDomMod[[i]] <- modesDom[[i]]}
 }
-modesDomMod <- unlist(modesDomMod)
+modesDomMod <- unlist(modesDomMod, recursive=FALSE) # AYYYYYY LMAO NAILED IT KEK
 
 
-mode_runs <- apply(all.matrix, c(1,2), Mode, na.rm=TRUE)
+ensemble <- data.frame(freqs[[maxlength]][,1], mean_runs[,1], modesDomMod, sd_runs) # data frame containing all the runs and the largest 
+# breaks sequence. shooorter lines filled with zeros. now need average and plot and fit of the lm
 
-ensemble <- data.frame(freqs[[maxlength]][,1], mean_runs, sd_runs) # data frame containing all the runs and the largest 
-# breaks sequence. shorter lines filled with zeros. now need average and plot and fit of the lm
-
+ensemble <- ensemble[,c(1:4)]
 colnames(ensemble)<-c("ln_length","ln_freq", "dom", "sd")
 ensemble$sd[ensemble$sd==0] <- NA
-ensemble$dom <- round(ensemble$dom)
-ensemble$dom <- c(ensemble$dom[2:length(ensemble$dom)], NaN)
+# ensemble$dom <- c(ensemble$dom[2:length(ensemble$dom)], NA) # wat
+ensemble$ln_freq[ensemble$ln_freq==0] <- NA
 
 
 
-#fitting <- function(ln_length){population_coefs[1]+population_coefs[2]*ln_length+population_coefs[3]*ln_length^2} # stores the function
 
+fitExperiment = lm(ensemble$ln_freq ~ ensemble$ln_length)#, 
+#weights=1/(ensemble$sd^2)) # fitting the quadratic model to the AVERAGE bins
+newx = data.frame(bin = ensemble$ln_length)
+pred <- predict(fitExperiment,newdata=newx) 
+pdat <- data.frame(newx, pred, ymax=pred+ensemble$sd, ymin=pred-ensemble$sd) # create array of coordinates, y of the model is y, the bins are x (x could be whatsoever, just the length must be the same)
+pdat <- with(data.frame(pred),
+             data.frame(x = newx, y = fitExperiment))
+est <- coef(summary(fitExperiment))[,1]
+err <- coef(summary(fitExperiment))[,2]
 
+# functions of the extreme lines
 
-# fitExperiment = lm(ensemble$ln_freq ~ ensemble$ln_length+I(ensemble$ln_length^2), 
-#                    weights=1/(ensemble$sd^2))
-# plot(ensemble$ln_length, ensemble$ln_freq)
-# newx = data.frame(bin = ensemble$ln_length)
-# pred <- predict(fitExperiment,newdata=newx)
-# pdat <- data.frame(newx, pred, ymax=pred+ensemble$sd, ymin=pred-ensemble$sd)
-# 
-# pdat <- with(data.frame(pred),
-#              data.frame(x = newx, y = fitExperiment))
+trueReg <- function(ln_length){(est[2])*ln_length+est[1]}
+mmin <- function(ln_length){(est[2]-err[2])*ln_length+est[1]}
+mmax <- function(ln_length){(est[2]+err[2])*ln_length+est[1]}
+qmin <- function(ln_length){est[2]*ln_length+est[1]-err[1]}
+qmax <- function(ln_length){est[2]*ln_length+est[1]+err[1]}
 
 library(RColorBrewer)
 par(mar = c(0, 4, 0, 0))
-display.brewer.all()
+#display.brewer.all()
 brewer.pal(9, "Set1")
 
-write.table(ensemble, "C:/Users/Alberto/Documents/itn100results/input/sizeSpectrumInput/col")
+write.table(ensemble, "C:/Users/Alberto/Documents/itn100results/input/sizeSpectrumInput/col/M500_I1.csv")
 
 
 p <- ggplot(subset(ensemble, dom==1 | dom==2| dom==3 | dom==5| dom==6| dom==7 | dom==4),
             aes(x = ln_length, y = ln_freq, colour= factor(dom))) +
         geom_point(aes(size=2, position="jitter")) +
+        stat_function(data=ensemble, fun= trueReg, linetype="solid", color="blue")+
+        stat_function(data=ensemble, fun= mmin, linetype="dashed", color="grey")+
+        stat_function(data=ensemble, fun= mmax, linetype="dashed", color="grey")+
+        stat_function(data=ensemble, fun= qmin, linetype="dashed", color="grey")+
+        stat_function(data=ensemble, fun= qmax, linetype="dashed", color="grey")+
         scale_x_continuous("ln(weight class [20g])", breaks=seq(3,11,1),
-                           limits=c(3,11), labels=c(3:11))+
+                           limits=c(2.99,11), labels=c(3:11))+
         scale_y_continuous(name="ln(number of individuals)", 
                            limits=c(0,14),
                            breaks=c(0:14))+
@@ -217,63 +221,6 @@ p <- ggplot(subset(ensemble, dom==1 | dom==2| dom==3 | dom==5| dom==6| dom==7 | 
         theme(axis.text.y=element_text(size=12))
 
 p
-coef(fitExperiment)
-summary(fitExperiment)
-
-#ggsave("C:/Users/Alberto/Documents/itn100results/R_output/unselective/ind/i3.pdf", p, useDingbats=FALSE )
 
 
-
-# lines(newx$bin,predict(fitExperiment,newdata=newx)) # I do realize it's actually the exact same stuff I did
-# 
-# qplot(ensemble$ln_length,ensemble$ln_freq, geom='smooth', method = "lm", 
-#       formula = y ~ x + I(x^2), span=1)+
-#         geom_point()
-# 
-# 
-# 
-# 
-# 
-# #lin_extra <- lm(ensemble$ln_freq~ensemble$ln_length)
-# pol_extra <- lm(ensemble$ln_freq~ensemble$ln_length+I(ensemble$ln_length^2)) # fit model to the MEAN freq-class
-# pol_extraCube <- lm(ensemble$ln_freq~ensemble$ln_length+I(ensemble$ln_length^2)++I(ensemble$ln_length^3))
-# summary(pol_extra)
-# coefs_extra <- as.numeric(coef(pol_extra)) # extracts the coefficients of the quadratic model
-# coefs_extraCube <- as.numeric(coef(pol_extraCube)) # extracts the coefficients of the quadratic model
-# length_extra <- ensemble$ln_length
-# fitting2 <- function(length_extra){coefs_extra[1]+coefs_extra[2]*length_extra+coefs_extra[3]*length_extra^2} # stores the function
-# fittingCube <- function(ln_length){coefs_extraCube[1]+coefs_extraCube[2]*ln_length+
-#                                            coefs_extraCube[3]*ln_length^2+coefs_extraCube[4]*ln_length^3} # stores the function
-# 
-# #fitting2 <- spectrum built on the new curve instead
-# 
-# # ggplotter
-# 
-# gplot <- ggplot(ensemble, aes(x=ln_length, y=ln_freq))+
-#         geom_point(shape=1)+
-#         stat_function(fun = fitting2, geom="line", colour = "blue")+
-#         scale_x_continuous("ln(weight class [20g])", breaks=seq(0,11,1),
-#                            limits=c(0,11), labels=c(0:11))+
-#         scale_y_continuous(name="ln(number of individuals)", 
-#                            limits=c(0,12),
-#                            breaks=c(0:12))+
-#         #labs(title="Community weight spectrum")+
-#         theme(panel.background = element_rect(fill = 'white'))+
-#         #theme
-#         theme_bw()+
-#         theme(panel.grid.minor = element_blank(), 
-#               panel.grid.major = element_line(linetype="dashed"))+
-#         theme(plot.title = element_text(size=14, vjust=2))+
-#         theme(axis.title.x = element_text(size=12,vjust=-0.5),
-#               axis.title.y = element_text(size=12,vjust=0.5))+
-#         theme(axis.text.x=element_text(size=12))+
-#         theme(axis.text.y=element_text(size=12))
-# 
-# gplot
-
-#ggsave("C:/Users/Alberto/Documents/MASTER THESIS/testOutput/test12072015/Community weight spectrum_selective500_10.pdf", gplot, useDingbats=FALSE )
-
-
-investigate <- data_list[[1]]
-investigateSd <- investigate[investigate$class.=="smalldemersal",]
-domDem <- dominantClasses[[1]]
+ggsave("C:/Users/Alberto/Documents/itn100results/R_output/base/ind/baseCol1.pdf", p, useDingbats=FALSE )
