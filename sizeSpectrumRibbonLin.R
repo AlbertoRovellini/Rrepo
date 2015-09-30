@@ -15,8 +15,8 @@
 # 03/06/2015 correction of a syntax error in the lm formula 
 
 library(ggplot2)
-setwd("C:/Users/Alberto/Documents/itn100results/resultsBase/ind/demo")
-list<-list.files("C:/Users/Alberto/Documents/itn100results/resultsBase/ind/demo", 
+setwd("C:/Users/Alberto/Documents/itn100results/size500_i3/ind/half")
+list<-list.files("C:/Users/Alberto/Documents/itn100results/size500_i3/ind/half", 
                  recursive=TRUE, pattern="*.csv") 
 length.list<-length(list)
 read.special<-function(x) {

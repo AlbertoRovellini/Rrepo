@@ -9,8 +9,8 @@
 # the linear regression of the spectrum is also plotted, but it's computed in another script.
 
 library(ggplot2)
-setwd("C:/Users/Alberto/Documents/itn100results/mixed_i1/ind")
-list<-list.files("C:/Users/Alberto/Documents/itn100results/mixed_i1/ind", 
+setwd("C:/Users/Alberto/Documents/itn100results/size500_i2/ind")
+list<-list.files("C:/Users/Alberto/Documents/itn100results/size500_i2/ind", 
                  recursive=TRUE, pattern="*.csv") 
 length.list<-length(list)
 read.special<-function(x) {
@@ -184,10 +184,10 @@ qmax <- function(ln_length){est[2]*ln_length+est[1]+err[1]}
 
 library(RColorBrewer)
 par(mar = c(0, 4, 0, 0))
-#display.brewer.all()
+display.brewer.all()
 brewer.pal(9, "Set1")
 
-write.table(ensemble, "C:/Users/Alberto/Documents/itn100results/input/sizeSpectrumInput/col/M500_I1.csv")
+write.table(ensemble, "C:/Users/Alberto/Documents/itn100results/input/sizeSpectrumInput/col/S250_I1.csv")
 
 
 p <- ggplot(subset(ensemble, dom==1 | dom==2| dom==3 | dom==5| dom==6| dom==7 | dom==4),

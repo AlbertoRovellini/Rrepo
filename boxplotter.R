@@ -97,7 +97,7 @@ unselective$Scen <- factor(unselective$Scen, levels = unique(unselective$Scen)) 
 # things (implying there are interesting things)
 
 box <- ggplot(unselective, aes(x=Scen, y=x, color=Group, factor=Scen))+
-        geom_boxplot(outlier.shape = 1)+
+        geom_boxplot(outlier.shape = 1, alpha=0.65)+
         theme(panel.background = element_rect(fill = 'white'))+
         scale_x_discrete(name="Scenario")+
         scale_y_continuous(name="Evenness index",
@@ -481,3 +481,37 @@ ggsave("C:/Users/Alberto/Documents/MASTER THESIS/results/R_output/evennessIndex/
 
 
 #########################################################################################
+
+youmaresData <- unselective[unselective$Scen=="Base" | unselective$Scen=="U_I1"
+                            | unselective$Scen=="U_I3"| unselective$Scen=="C_I1"
+                            | unselective$Scen=="C_I3"| unselective$Scen=="S500_I1"
+                            | unselective$Scen=="S500_I3"| unselective$Scen=="S250_I1"
+                            | unselective$Scen=="S250_I3",]
+
+youmares <- ggplot(youmaresData, aes(x=Scen, y=x))+
+        geom_boxplot(outlier.shape = 1)+
+        theme(panel.background = element_rect(fill = 'white'))+
+        scale_x_discrete(name="Scenario",
+                         labels=c("Base","U_10", "U_50","C_10","C_50","S500_10","S500_50","S250_10","S250_50"))+
+        scale_y_continuous(name="Evenness index",
+                           breaks=seq(1,2.7, .1))+
+        # the order of the colors here is manual to prevent ggplot from messing up
+        #scale_color_manual(name="Selectivity regime", 
+                           #values=rep("black",9),
+                           #breaks=c("Base","Unselective","Size (500g)", "Class", "Size (250g)"))+
+        #theme
+        theme_bw()+
+        theme(panel.grid.minor = element_blank(), 
+              panel.grid.major = element_line(linetype="dashed"))+
+        theme(plot.title = element_text(size=14, vjust=2))+
+        theme(axis.title.x = element_text(size=12,vjust=-0.5),
+              axis.title.y = element_text(size=12,vjust=0.5))+
+        theme(axis.text.x=element_text(size=12, angle=45, hjust=1))+
+        theme(axis.text.y=element_text(size=12))+
+        stat_boxplot(geom = "errorbar", stat_params = list(width = 0))+
+        geom_boxplot(outlier.shape = 1)
+
+youmares
+
+ggsave("C:/Users/Alberto/Desktop/youmares/poster/graphs/boxplot.pdf", youmares, useDingbats=FALSE)
+

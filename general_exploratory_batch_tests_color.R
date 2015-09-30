@@ -56,32 +56,33 @@ normal_scientific<-expression(0,10,10^2,10^3,10^4,10^5,10^6) # notation to be us
 # plotting code
 gplot <-ggplot(subset(mcomb, variable=="smallpelagic" | variable=="mediumpelagic" | 
                               variable== "largepelagic" | variable== "smalldemersal" | variable== "mediumdemersal" | 
-                              variable== "largedemersal" | variable== "mediumgrazer" | variable== "largegrazer" | 
-                              variable== "topcarnivores"),
+                              variable== "largedemersal" | variable== "topcarnivores"),
                aes(x=Time,y=value, color=variable))+
-        geom_line(aes(color=variable))+ 
+        geom_line(aes(color=variable),size=1)+ 
         labs(#title = "Population dynamics of the community", 
              x="Time steps", 
-             y="Abundance (total num of individuals)")+
-        scale_color_manual(values=c("blue", "red", "green", "yellow", "purple", 
-                                       "black", "pink", "white", "grey"), 
-                              name="Population")+
+             y="N° of individuals")+
         scale_x_discrete("Time steps", breaks=seq(0,2000,by=250), expand=c(0,0)) +
-        scale_y_continuous(name="Abundance (thousands ind 100 km^(-2)", 
+        scale_y_continuous(name="N° of individuals", 
                            limits=c(1,1000000),
                            breaks=c(0,10,100,1000,10000,100000,1000000), 
                            expand=c(0,0), labels=normal_scientific)+
+        scale_colour_manual(name="Functional groups",
+                            values=c("#377EB8", "#E41A1C", "#4DAF4A","#FF7F00","#984EA3","#999999","#F781BF"),
+                            labels=c("Small pelagic", "Medium pelagic", "Large pelagic", "Small demersal",
+                                     "Medium demersal", "Large demersals", "Top predators"))+
+        guides(colour = guide_legend(override.aes = list(size=5)))+
         coord_trans(y="log10")+
         #errorbars
-        geom_errorbar(limits1, alpha=0.1, data=subset(mcomb, variable=="smallpelagic"))+
-        geom_errorbar(limits2, alpha=0.1, data=subset(mcomb, variable=="mediumpelagic"))+
-        geom_errorbar(limits3, alpha=0.1, data=subset(mcomb, variable=="largepelagic"))+
-        geom_errorbar(limits4, alpha=0.1, data=subset(mcomb, variable=="smalldemersal"))+
-        geom_errorbar(limits5, alpha=0.1, data=subset(mcomb, variable=="mediumdemersal"))+
-        geom_errorbar(limits6, alpha=0.1, data=subset(mcomb, variable=="largedemersal"))+
-        geom_errorbar(limits7, alpha=0.1, data=subset(mcomb, variable=="mediumgrazer"))+
-        geom_errorbar(limits8, alpha=0.1, data=subset(mcomb, variable=="largegrazer"))+
-        geom_errorbar(limits9, alpha=0.1, data=subset(mcomb, variable=="topcarnivores"))+
+#         geom_errorbar(limits1, alpha=0.1, data=subset(mcomb, variable=="smallpelagic"))+
+#         geom_errorbar(limits2, alpha=0.1, data=subset(mcomb, variable=="mediumpelagic"))+
+#         geom_errorbar(limits3, alpha=0.1, data=subset(mcomb, variable=="largepelagic"))+
+#         geom_errorbar(limits4, alpha=0.1, data=subset(mcomb, variable=="smalldemersal"))+
+#         geom_errorbar(limits5, alpha=0.1, data=subset(mcomb, variable=="mediumdemersal"))+
+#         geom_errorbar(limits6, alpha=0.1, data=subset(mcomb, variable=="largedemersal"))+
+#         geom_errorbar(limits7, alpha=0.1, data=subset(mcomb, variable=="mediumgrazer"))+
+#         geom_errorbar(limits8, alpha=0.1, data=subset(mcomb, variable=="largegrazer"))+
+#         geom_errorbar(limits9, alpha=0.1, data=subset(mcomb, variable=="topcarnivores"))+
         theme(panel.background = element_rect(fill = 'white'))+
         #theme
         theme(panel.background = element_rect(fill = 'white'))+
@@ -97,6 +98,8 @@ gplot <-ggplot(subset(mcomb, variable=="smallpelagic" | variable=="mediumpelagic
 gplot
 
 ggsave("C:/Users/Alberto/Documents/itn100results/R_output/base/tot/population.pdf", gplot, useDingbats=FALSE ) # set better res pls
+
+ggsave("C:/Users/Alberto/Desktop/youmares/poster/graphs/community.pdf", gplot, useDingbats=FALSE)
 
 
 

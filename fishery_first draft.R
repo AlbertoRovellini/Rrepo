@@ -3,8 +3,8 @@
 
 library(ggplot2)
 library(reshape)
-setwd("C:/Users/Alberto/Documents/itn100results/mixed250_i3/fish")
-list<-list.files("C:/Users/Alberto/Documents/itn100results/mixed250_i3/fish", 
+setwd("C:/Users/Alberto/Documents/itn100results/size250_i3/fish")
+list<-list.files("C:/Users/Alberto/Documents/itn100results/size250_i3/fish", 
                  recursive=TRUE, pattern=".csv*") # lists all the file (might need to change to .csv)
 length.list<-length(list)
 read.special<-function(x) {
@@ -51,21 +51,26 @@ meltAll <- melt(allData1, id.vars="Event", variable="variable", value="value")
 
 runOne <- total[[1]]
 meltOne <- melt(runOne, id.vars="Event")
-trick<-expression(seq(0,7000,1000))
+trick<-expression(seq(0,7,0.5))
 
 
 p<-ggplot(subset(meltAll,variable=="Smallpelagic" | variable=="Mediumpelagic" | 
                          variable== "Largepelagic" | variable== "Smalldemersal" | variable== "Mediumdemersal" | 
                          variable== "Largedemersal" | variable== "Mediumgrazer" | variable== "Largegrazer" | 
-                         variable== "Topcarnivore"), aes(x=Event, y=value, colour=variable))+
-        geom_area(aes(fill=variable), position='stack')+ 
+                         variable== "Topcarnivore"), aes(x=Event, y=value, fill=variable))+
+        geom_area(aes(fill=variable), position='stack', alpha=0.65)+ 
         labs(x="Years", 
-             y="Catch (kg)")+
-        scale_x_continuous("Years", breaks=seq(1,20,1),
-                           limits=c(0,21), labels=seq(1,20,1), expand=c(0,0))+
+             y="Catch [t]")+
+        scale_x_continuous("Years", breaks=c(1,5,10,15,20),
+                           limits=c(0,21), labels=c(1,5,10,15,20), expand=c(0,0))+
         scale_y_continuous(limits=c(0,7000000),
-                           breaks=seq(0,7000000,1000000), 
-                           expand=c(0,0), labels=seq(0,7000,1000))+
+                           breaks=seq(0,7000000,500000), 
+                           expand=c(0,0), labels=seq(0,7,0.5))+
+        scale_fill_manual(name="Functional groups",
+                            values=c("#377EB8", "#E41A1C", "#4DAF4A","#FF7F00","#984EA3","#999999","#F781BF"),
+                            labels=c("Small pelagic", "Medium pelagic", "Large pelagic", "Small demersal",
+                                     "Medium demersal", "Large demersals", "Top carnivores"))+
+        #guides(colour = guide_legend(override.aes = list(size=5)))+
         #coord_trans(y="log10")+
         theme(panel.background = element_rect(fill = 'white'))+
         #theme
@@ -81,4 +86,4 @@ p<-ggplot(subset(meltAll,variable=="Smallpelagic" | variable=="Mediumpelagic" |
 p
 
 
-ggsave("C:/Users/Alberto/Documents/MASTER THESIS/results/R_output/fishery/mixed250_I3.pdf", p, useDingbats=FALSE)
+ggsave("C:/Users/Alberto/Desktop/youmares/poster/graphs/S250_I3.pdf", p, useDingbats=FALSE)
