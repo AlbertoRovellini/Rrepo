@@ -18,7 +18,7 @@ read.special<-function(x) {
 data_list<-lapply(list, read.special) # all the data in a huge list of data
 matcol<-list() # empty list for the loop
 for (i in c(1:length.list)) { # should become a plyr function
-        matcol[[i]]<-data_list[[i]][,c(1,4,6,8,10,12,14,16,18,20)] # list of matrix containing data of interest: time and classes for each .csv
+        matcol[[i]]<-data_list[[i]][,c(1,4,6,8,10,12,14,20)] # list of matrix containing data of interest: time and classes for each .csv
 }
 all.matrix <- abind(matcol, along=3) # change the structure of the matrix matcol in order to use the function apply on it
 mean_all <- apply(all.matrix, c(1,2), mean) # calculates the mean number of individuals in every position
@@ -26,11 +26,9 @@ sd_all <- apply(all.matrix, c(1,2), sd) # and its sd
 sd_all[,1] <- mean_all[,1]
 
 colnames(mean_all)<-c("Time","smallpelagic","mediumpelagic","largepelagic","smalldemersal",
-                      "mediumdemersal","largedemersal",
-                      "mediumgrazer","largegrazer","topcarnivores") # changes the names of the columns
+                      "mediumdemersal","largedemersal","toppiscivores") # changes the names of the columns
 colnames(sd_all)<-c("Time","smallpelagicSD","mediumpelagicSD","largepelagicSD","smalldemersalSD",
-                    "mediumdemersalSD","largedemersalSD",
-                    "mediumgrazerSD","largegrazerSD","topcarnivoresSD") # for sd as well
+                    "mediumdemersalSD","largedemersalSD", "toppiscivoresSD") # for sd as well
 mean_all<-as.data.frame(mean_all) # turns the matrix into a data frame
 sd_all<-as.data.frame(sd_all) # same
 mean_all[,c(2:length(mean_all))] <- mean_all[,c(2:length(mean_all))] + 1 # workaround for the log scale (either this or NAs, no big difference)
@@ -38,20 +36,65 @@ mean_all[,c(2:length(mean_all))] <- mean_all[,c(2:length(mean_all))] + 1 # worka
 comb <- merge(mean_all, sd_all, "Time") # one df with all the means and sd (necessary for the mapping of the plot)
 
 # mapping of the limits for the errorbar plot, each mean +- its sd. one entry per class is necessary
-limits1<-aes(ymax=comb$smallpelagic+comb$smallpelagicSD, ymin=comb$smallpelagic) #-comb$smallpelagicSD)
-limits2<-aes(ymax=comb$mediumpelagic+comb$mediumpelagicSD, ymin=comb$mediumpelagic) #-comb$mediumpelagicSD)
-limits3<-aes(ymax=comb$largepelagic+comb$largepelagicSD, ymin=comb$largepelagic) #-comb$largepelagicSD)
-limits4<-aes(ymax=comb$smalldemersal+comb$smalldemersalSD, ymin=comb$smalldemersal) #-comb$smalldemersalSD)
-limits5<-aes(ymax=comb$mediumdemersal+comb$mediumdemersalSD, ymin=comb$mediumdemersal) #-comb$mediumdemersalSD)
-limits6<-aes(ymax=comb$largedemersal+comb$largedemersalSD, ymin=comb$largedemersal) #-comb$largedemersalSD)
-limits7<-aes(ymax=comb$mediumgrazer+comb$mediumgrazerSD, ymin=comb$mediumgrazer) #-comb$mediumgrazerSD)
-limits8<-aes(ymax=comb$largegrazer+comb$largegrazerSD, ymin=comb$largegrazer) #-comb$largegrazerSD)
-limits9<-aes(ymax=comb$topcarnivores+comb$topcarnivoresSD, ymin=comb$topcarnivores) #-comb$topcarnivoresSD)
+# retarded
+# limits1<-aes(ymax=comb$smallpelagic+comb$smallpelagicSD, ymin=comb$smallpelagic) #-comb$smallpelagicSD)
+# limits2<-aes(ymax=comb$mediumpelagic+comb$mediumpelagicSD, ymin=comb$mediumpelagic) #-comb$mediumpelagicSD)
+# limits3<-aes(ymax=comb$largepelagic+comb$largepelagicSD, ymin=comb$largepelagic) #-comb$largepelagicSD)
+# limits4<-aes(ymax=comb$smalldemersal+comb$smalldemersalSD, ymin=comb$smalldemersal) #-comb$smalldemersalSD)
+# limits5<-aes(ymax=comb$mediumdemersal+comb$mediumdemersalSD, ymin=comb$mediumdemersal) #-comb$mediumdemersalSD)
+# limits6<-aes(ymax=comb$largedemersal+comb$largedemersalSD, ymin=comb$largedemersal) #-comb$largedemersalSD)
+# limits7<-aes(ymax=comb$mediumgrazer+comb$mediumgrazerSD, ymin=comb$mediumgrazer) #-comb$mediumgrazerSD)
+# limits8<-aes(ymax=comb$largegrazer+comb$largegrazerSD, ymin=comb$largegrazer) #-comb$largegrazerSD)
+# limits9<-aes(ymax=comb$topcarnivores+comb$topcarnivoresSD, ymin=comb$topcarnivores) #-comb$topcarnivoresSD)
 
 mcomb <- melt(comb, id.vars="Time",variable.name= "variable", 
               value.name="value") # melt the dataset for ggplot
 
 normal_scientific<-expression(0,10,10^2,10^3,10^4,10^5,10^6) # notation to be used in the plot
+
+meltMean <- melt(mean_all, id.vars = "Time", variable.name="variable", value.name="value")
+meltSd <- melt(sd_all, id.vars = "Time", variable.name="variable", value.name="value")
+complete <- data.frame(meltMean, meltSd[,3])
+colnames(complete) <- c("time", "class", "mean", "sd")
+
+
+
+ribbonPlot <- ggplot(complete, aes(x=time, y=mean, color=class))+
+        geom_line(aes(color=class))+
+        #???geom_ribbon(aes(ymin=mean-sd, ymax=mean+sd, color=class), alpha=0.5)+
+        labs(#title = "Population dynamics of the community", 
+                x="Time steps", 
+                y="N° of individuals")+
+        scale_x_discrete("Time steps", breaks=seq(0,2000,by=250), expand=c(0,0)) +
+        scale_y_continuous(name="N° of individuals", 
+                           limits=c(1,1000000),
+                           breaks=c(0,10,100,1000,10000,100000,1000000), 
+                           expand=c(0,0), labels=normal_scientific)+
+        scale_colour_manual(name="Functional groups",
+                            values=c("#377EB8", "#E41A1C", "#4DAF4A","#FF7F00","#984EA3","#999999","#F781BF"),
+                            labels=c("Small pelagic", "Medium pelagic", "Large pelagic", "Small demersal",
+                                     "Medium demersal", "Large demersals", "Top piscivores"))+
+        guides(colour = guide_legend(override.aes = list(size=5)))+
+        coord_trans(y="log10")+
+        theme(panel.background = element_rect(fill = 'white'))+
+        #theme
+        theme(panel.background = element_rect(fill = 'white'))+
+        #theme
+        theme_bw()+
+        theme(panel.grid.minor = element_blank(), 
+              panel.grid.major = element_line(linetype="dashed"))+
+        theme(plot.title = element_text(size=14, vjust=2))+
+        theme(axis.title.x = element_text(size=12,vjust=-0.5),
+              axis.title.y = element_text(size=12,vjust=0.5))+
+        theme(axis.text.x=element_text(size=12))+
+        theme(axis.text.y=element_text(size=12))
+
+ribbonPlot
+
+
+
+
+
 
 # plotting code
 gplot <-ggplot(subset(mcomb, variable=="smallpelagic" | variable=="mediumpelagic" | 

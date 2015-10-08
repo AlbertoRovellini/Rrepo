@@ -27,6 +27,9 @@ brewer.pal(9, "Set1")
 
 dodge <- position_dodge(0.9)
 
+meltAllDataMod <- subset(meltAllData, variable!="Total")
+meltAllDataMod$intensity <- rep(c("0", rep(c("1","2","3"),6)), 7)
+
 newPlot <- ggplot(data=meltAllDataMod, aes(x=Regime, y=value, fill=variable))+
         geom_bar(position=dodge, stat="identity")+
         geom_errorbar(aes(ymin=value-sd,ymax=value+sd),
@@ -56,9 +59,6 @@ newPlot <- ggplot(data=meltAllDataMod, aes(x=Regime, y=value, fill=variable))+
 newPlot # hahaha nailed it kek
 
 # by intensity
-
-meltAllDataMod <- subset(meltAllData, variable!="Total")
-meltAllDataMod$intensity <- rep(c("0", rep(c("1","2","3"),6)), 7)
 
 # 10%
 
@@ -185,7 +185,9 @@ totPlot <- ggplot(data=meltAllDataTot, aes(x=Regime, y=value, fill=intensity, co
         theme(axis.text.y=element_text(size=12))
 
 
-totPlot 
+totPlot
+
+ggsave("C:/Users/Alberto/Documents/LaTeX/latexdirectory/picsWP/biomassBarchartTot.pdf", totPlot, useDingbats=FALSE ) # set better res pls
 
 # tot by intensity
 
@@ -201,8 +203,8 @@ totPlot10 <- ggplot(data=subset(meltAllDataTot, intensity=="0" | intensity=="1")
                            breaks=seq(0,70,5), 
                            expand=c(0,0), labels=seq(0,70,5), "Community biomass [t]")+
         scale_fill_manual(name="Intensity",
-                          values=c("white", "lightgrey", "darkgrey","black"),
-                          labels=c("Unfished", "10%", "20%", "50%"))+
+                          values=c("white", "lightgrey"),
+                          labels=c("Unfished", "10%"))+
         scale_colour_manual(name="lmao",
                             values=rep("black",4))+
         
@@ -221,6 +223,9 @@ totPlot10 <- ggplot(data=subset(meltAllDataTot, intensity=="0" | intensity=="1")
 
 totPlot10
 
+ggsave("C:/Users/Alberto/Documents/LaTeX/latexdirectory/picsWP/biomassBarchart10.pdf", totPlot10, useDingbats=FALSE ) # set better res pls
+
+
 # 20%
 
 totPlot20 <- ggplot(data=subset(meltAllDataTot, intensity=="0" | intensity=="2"),
@@ -233,8 +238,8 @@ totPlot20 <- ggplot(data=subset(meltAllDataTot, intensity=="0" | intensity=="2")
                            breaks=seq(0,70,5), 
                            expand=c(0,0), labels=seq(0,70,5), "Community biomass [t]")+
         scale_fill_manual(name="Intensity",
-                          values=c("white", "lightgrey", "darkgrey","black"),
-                          labels=c("Unfished", "10%", "20%", "50%"))+
+                          values=c("white", "darkgrey"),
+                          labels=c("Unfished", "20%"))+
         scale_colour_manual(name="lmao",
                             values=rep("black",4))+
         
@@ -253,6 +258,9 @@ totPlot20 <- ggplot(data=subset(meltAllDataTot, intensity=="0" | intensity=="2")
 
 totPlot20
 
+ggsave("C:/Users/Alberto/Documents/LaTeX/latexdirectory/picsWP/biomassBarchart20.pdf", totPlot20, useDingbats=FALSE ) # set better res pls
+
+
 # 50%
 
 totPlot50 <- ggplot(data=subset(meltAllDataTot, intensity=="0" | intensity=="3"),
@@ -265,8 +273,8 @@ totPlot50 <- ggplot(data=subset(meltAllDataTot, intensity=="0" | intensity=="3")
                            breaks=seq(0,70,5), 
                            expand=c(0,0), labels=seq(0,70,5), "Community biomass [t]")+
         scale_fill_manual(name="Intensity",
-                          values=c("white", "lightgrey", "darkgrey","black"),
-                          labels=c("Unfished", "10%", "20%", "50%"))+
+                          values=c("white", "black"),
+                          labels=c("Unfished", "50%"))+
         scale_colour_manual(name="lmao",
                             values=rep("black",4))+
         
@@ -284,6 +292,9 @@ totPlot50 <- ggplot(data=subset(meltAllDataTot, intensity=="0" | intensity=="3")
 
 
 totPlot50
+
+ggsave("C:/Users/Alberto/Documents/LaTeX/latexdirectory/picsWP/biomassBarchart50.pdf", totPlot50, useDingbats=FALSE ) # set better res pls
+
 
 
 

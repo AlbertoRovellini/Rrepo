@@ -1,3 +1,5 @@
+# please correct all the biomass to abundances
+
 library(ggplot2)
 library(reshape)
 setwd("C:/Users/Alberto/Documents/itn100results/input/finalInput")
@@ -18,6 +20,9 @@ meltAllData <- meltmeanValues
 
 meltAllDataMod <- subset(meltAllData, variable!="Total")
 meltAllDataMod$intensity <- rep(c("0", rep(c("1","2","3"),6)), 7)
+
+normal_scientific<-expression(0, 10^5, 2*10^5, 3*10^5, 4*10^5) # notation to be used in the plot
+
 
 # limits for the errorbars, sd
 
@@ -167,8 +172,8 @@ totPlot <- ggplot(data=meltAllDataTot, aes(x=Regime, y=value, fill=intensity, co
                       position=dodge, width=0.1, size=0.3)+
         scale_x_discrete(name="Fishing regime")+
         scale_y_continuous(limits=c(0,400000),
-                           breaks=seq(0,400000,25000), 
-                           expand=c(0,0), labels=seq(0,400000,25000), "Community biomass [t]")+
+                           breaks=c(0,100000,200000,300000,400000), 
+                           expand=c(0,0), labels=c(0,100000,200000,300000,400000), "Abundance [individuals]")+
         scale_fill_manual(name="Intensity",
                           values=c("white", "lightgrey", "darkgrey","black"),
                           labels=c("Unfished", "10%", "20%", "50%"))+
@@ -189,6 +194,8 @@ totPlot <- ggplot(data=meltAllDataTot, aes(x=Regime, y=value, fill=intensity, co
 
 
 totPlot 
+
+ggsave("C:/Users/Alberto/Documents/LaTeX/latexdirectory/picsWP/abundanceBarchart.pdf", totPlot, useDingbats=FALSE ) # set better res pls
 
 # tot by intensity
 

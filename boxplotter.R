@@ -124,6 +124,39 @@ box
 
 ggsave("C:/Users/Alberto/Documents/MASTER THESIS/results/R_output/evennessIndex/boxplot_tot.pdf", box, useDingbats=FALSE)
 
+
+###############################################
+
+
+intensity <- c(rep(0,100),rep(c(rep(1,100),rep(2,100),rep(3,100)),6))
+unselective$intensity <- intensity
+boxBW <- ggplot(unselective, aes(x=Scen, y=x, factor=Scen, fill=factor(intensity)))+
+        geom_boxplot(outlier.shape = 1, alpha=0.65)+
+        theme(panel.background = element_rect(fill = 'white'))+
+        scale_x_discrete(name="Scenario")+
+        scale_y_continuous(name="Evenness index",
+                           breaks=seq(1,2.7, .1))+
+        scale_fill_manual(name="Intensity",
+                           values=c("white", "gray90", "gray70","grey50"), 
+                           breaks=c("Unexploited","10%","20%", "50%"))+
+        #theme
+        theme_bw()+
+        theme(panel.grid.minor = element_blank(), 
+              panel.grid.major = element_line(linetype="dashed"))+
+        theme(plot.title = element_text(size=14, vjust=2))+
+        theme(axis.title.x = element_text(size=12,vjust=-0.5),
+              axis.title.y = element_text(size=12,vjust=0.5))+
+        theme(axis.text.x=element_text(size=12, angle=45, hjust=1))+
+        theme(axis.text.y=element_text(size=12))+
+        stat_boxplot(geom = "errorbar", stat_params = list(width = 0.5))+
+        geom_boxplot(outlier.shape = 1)
+
+boxBW
+
+ggsave("C:/Users/Alberto/Documents/LaTeX/latexdirectory/picsWP/totalBox.pdf", boxBW, useDingbats=FALSE ) # set better res pls
+
+
+
 ##### here will be all the supposedly relevant plots for comparisons #####
 # for instance, base versus the lowest I of all the approahes, then base vs all the Is of
 # of one approach and so on

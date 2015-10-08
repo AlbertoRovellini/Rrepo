@@ -9,6 +9,8 @@
 
 # open mother directory
 
+require(abind)
+
 setwd("C:/Users/Alberto/Documents/itn100results")
 directories <- list.dirs("C:/Users/Alberto/Documents/itn100results", recursive=TRUE)
 directoriesTot <- directories[grep("tot", directories)] # isolates the directories I need
