@@ -1,7 +1,11 @@
 # probably the worst, most inefficient and retarded script I ever wrote.
 # script is not flexible, modifications input-depending. plots omit information. long, dumb regions.
 # absolutely requires deep revision and substantial editing.
-# 
+
+# edit: 09/10/2015. I must have had a bad day when I commented this. The script does not look
+# that bad. However, the whole region of data frame modification should be condensed in a loop,
+# or much better embedded functions should be written and lapply'd. also, the missing classes
+# should be included in the final data frame, otherwise the plot has to be edited.
 
 setwd("C:/Users/Alberto/Documents/itn100results/size250_I3/tot")
 library(abind)
@@ -10,7 +14,7 @@ list<-list.files("C:/Users/Alberto/Documents/itn100results/size250_I3/tot",
                  recursive=TRUE, pattern="*.csv") #the key is the recursive argument
 length.list<-length(list)
 read.special<-function(x) {
-        read.table(x, header=TRUE, sep='\t', dec='.', nrows=2000) # custom function to read the batches of .csv keeping the header
+        read.table(x, header=TRUE, sep='\t', dec='.', nrows=2001) # custom function to read the batches of .csv keeping the header
 } # 2001 because the 2100 steps is an artifact for the last fishery cycle
 data_list<-lapply(list, read.special) # all the data in a huge list of data
 matcol<-list() # empty list for the loop
@@ -36,6 +40,8 @@ fails <- fails[fails != "empty"] # most autistic method I could ever think of, b
 # analysis which won't account for extinctions occurred in the same run, just when and who
 global <- unlist(fails)
 
+# separates the classes from each other according to the number of collapses
+
 smallpelagic <- global[names(global)=="smallpelagic.nr."]
 mediumpelagic <- global[names(global)=="mediumpelagic.nr."]
 largepelagic <- global[names(global)=="largepelagic.nr."]
@@ -43,6 +49,8 @@ smalldemersal <- global[names(global)=="smalldemersal.nr."]
 mediumdemersal <- global[names(global)=="mediumdemersal.nr."]
 largedemersal <- global[names(global)=="largedemersal.nr."]
 topcarnivores <- global[names(global)=="topcarnivores.nr."]
+
+# builds a data frame per class, with the name of the class and the time step where it got extinct
 
 smallpelagic <- data.frame(rep("smallpelagic", length(smallpelagic)), smallpelagic, row.names=seq(1:length(smallpelagic)))
 mediumpelagic <- data.frame(rep("mediumpelagic", length(mediumpelagic)), mediumpelagic, row.names=seq(1:length(mediumpelagic)))
@@ -52,6 +60,8 @@ mediumdemersal <- data.frame(rep("mediumdemersal", length(mediumdemersal)), medi
 largedemersal <- data.frame(rep("largedemersal", length(largedemersal)), largedemersal, row.names=seq(1:length(largedemersal)))
 topcarnivores <- data.frame(rep("topcarnivores", length(topcarnivores)), topcarnivores, row.names=seq(1:length(topcarnivores)))
 
+# orders the data.frames with progressive time step
+
 smallpelagic <- smallpelagic[ order(smallpelagic[,2]),]
 mediumpelagic <- mediumpelagic[ order(mediumpelagic[,2]),]
 largepelagic <- largepelagic[ order(largepelagic[,2]),]
@@ -59,6 +69,8 @@ smalldemersal <- smalldemersal[ order(smalldemersal[,2]),]
 mediumdemersal <- mediumdemersal[ order(mediumdemersal[,2]),]
 largedemersal <- largedemersal[ order(largedemersal[,2]),]
 topcarnivores <- topcarnivores[ order(topcarnivores[,2]),]
+
+# adds a column with a progressive number
 
 smallpelagic$prog <- seq(1:nrow(smallpelagic))
 mediumpelagic$prog <- seq(1:nrow(mediumpelagic))
@@ -68,6 +80,8 @@ mediumdemersal$prog <- seq(1:nrow(mediumdemersal))
 largedemersal$prog <- seq(1:nrow(largedemersal))
 topcarnivores$prog <- seq(1:nrow(topcarnivores))
 
+# renames the columns of the data frames
+
 colnames(smallpelagic) <- c("class", "extinctions", "prog")
 colnames(mediumpelagic) <- c("class", "extinctions", "prog")
 colnames(largepelagic) <- c("class", "extinctions", "prog")
@@ -76,6 +90,7 @@ colnames(mediumdemersal) <- c("class", "extinctions", "prog")
 colnames(largedemersal) <- c("class", "extinctions", "prog")
 colnames(topcarnivores) <- c("class", "extinctions", "prog")
 
+# binds all the frames together for ggplot
 
 total <- rbind(smallpelagic, mediumpelagic, largepelagic, smalldemersal, mediumdemersal, 
                largedemersal, topcarnivores) # need to remove the vectors with one element
