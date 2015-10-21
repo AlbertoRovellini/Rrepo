@@ -7,10 +7,10 @@
 # or much better embedded functions should be written and lapply'd. also, the missing classes
 # should be included in the final data frame, otherwise the plot has to be edited.
 
-setwd("C:/Users/Alberto/Documents/itn100results/size250_I3/tot")
+setwd("C:/Users/Alberto/Documents/itn100results/mixed250_I3/tot")
 library(abind)
 library(reshape)
-list<-list.files("C:/Users/Alberto/Documents/itn100results/size250_I3/tot", 
+list<-list.files("C:/Users/Alberto/Documents/itn100results/mixed250_I3/tot", 
                  recursive=TRUE, pattern="*.csv") #the key is the recursive argument
 length.list<-length(list)
 read.special<-function(x) {

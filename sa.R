@@ -3,7 +3,7 @@
 library(reshape)
 library(ggplot2)
 setwd("C:/Users/Alberto/Documents/MASTER THESIS/results/sa_results")
-sa <- read.table("saExtinctionsSummary.txt", header=TRUE, sep='/t')
+sa <- read.table("saExtinctionsSummary.txt", header=TRUE, sep='\t')
 meltsa <- melt(sa, id.vars="Step")
 p <- ggplot(subset(meltsa, variable=="Mediumpelagic" | variable=="Largepelagic" |
                         variable=="Mediumdemersal" | variable=="Largedemersal" | variable=="Topcarnivore"),
@@ -28,4 +28,4 @@ p <- ggplot(subset(meltsa, variable=="Mediumpelagic" | variable=="Largepelagic" 
         theme(axis.text.y=element_text(size=12))
 p
 
-ggsave("C:/Users/Alberto/Documents/MASTER THESIS/results/R_output/extinctions.pdf", p, useDingbats=FALSE)
+ggsave("C:/Users/Alberto/Documents/LaTeX/latexdirectory/picsWP/sa.pdf", p, useDingbats=FALSE ) # set better res pls

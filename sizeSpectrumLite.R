@@ -2,7 +2,7 @@
 
 library(ggplot2)
 setwd("C:/Users/Alberto/Documents/itn100results/input/sizeSpectrumInput/col")
-ensemble <- read.table("M250_I3.csv", header=TRUE, sep=' ', dec='.')
+ensemble <- read.table("base.csv", header=TRUE, sep=' ', dec='.')
 
 ensemble$dom <- c(ensemble$dom[2:length(ensemble$dom)], NA) # to be used ONLY if not yet, check the 
 # head of the ensemble file

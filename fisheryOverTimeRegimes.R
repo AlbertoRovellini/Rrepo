@@ -5,8 +5,8 @@ library(reshape)
 library(abind)
 
 # data from the 1st scenario
-setwd("C:/Users/Alberto/Documents/itn100results/unselective_i1/fish")
-list1<-list.files("C:/Users/Alberto/Documents/itn100results/unselective_i1/fish", 
+setwd("C:/Users/Alberto/Documents/itn100results/unselective_i3/fish")
+list1<-list.files("C:/Users/Alberto/Documents/itn100results/unselective_i3/fish", 
                    recursive=TRUE, pattern=".csv*") # lists all the file (might need to change to .csv)
 length.list1<-length(list1)
 read.special<-function(x) {
@@ -53,8 +53,8 @@ sdev1 <- eventWriter(sdev1)
 
 # data from the 2nd scenario
 
-setwd("C:/Users/Alberto/Documents/itn100results/size500_i1/fish")
-list2<-list.files("C:/Users/Alberto/Documents/itn100results/size500_i1/fish", 
+setwd("C:/Users/Alberto/Documents/itn100results/size500_i3/fish")
+list2<-list.files("C:/Users/Alberto/Documents/itn100results/size500_i3/fish", 
                    recursive=TRUE, pattern=".csv*") # lists all the file (might need to change to .csv)
 length.list2<-length(list2)
 read.special<-function(x) {
@@ -85,8 +85,8 @@ sdev2 <- eventWriter(sdev2)
 
 # data from the 3rd scenario
 
-setwd("C:/Users/Alberto/Documents/itn100results/class_i1/fish")
-list3<-list.files("C:/Users/Alberto/Documents/itn100results/class_i1/fish", 
+setwd("C:/Users/Alberto/Documents/itn100results/class_i3/fish")
+list3<-list.files("C:/Users/Alberto/Documents/itn100results/class_i3/fish", 
                    recursive=TRUE, pattern=".csv*") # lists all the file (might need to change to .csv)
 length.list3<-length(list3)
 read.special<-function(x) {
@@ -117,8 +117,8 @@ sdev3 <- eventWriter(sdev3)
 
 # data from the 4th scenario
 
-setwd("C:/Users/Alberto/Documents/itn100results/mixed_i1/fish")
-list4<-list.files("C:/Users/Alberto/Documents/itn100results/mixed_i1/fish", 
+setwd("C:/Users/Alberto/Documents/itn100results/mixed_i3/fish")
+list4<-list.files("C:/Users/Alberto/Documents/itn100results/mixed_i3/fish", 
                   recursive=TRUE, pattern=".csv*") # lists all the file (might need to change to .csv)
 length.list4<-length(list4)
 read.special<-function(x) {
@@ -149,8 +149,8 @@ sdev4 <- eventWriter(sdev4)
 
 # data from the 5th scenario
 
-setwd("C:/Users/Alberto/Documents/itn100results/size250_i1/fish")
-list5<-list.files("C:/Users/Alberto/Documents/itn100results/size250_i1/fish", 
+setwd("C:/Users/Alberto/Documents/itn100results/size250_i3/fish")
+list5<-list.files("C:/Users/Alberto/Documents/itn100results/size250_i3/fish", 
                   recursive=TRUE, pattern=".csv*") # lists all the file (might need to change to .csv)
 length.list5<-length(list5)
 read.special<-function(x) {
@@ -181,8 +181,8 @@ sdev5 <- eventWriter(sdev5)
 
 # data from the 6th scenario
 
-setwd("C:/Users/Alberto/Documents/itn100results/mixed250_i1/fish")
-list6<-list.files("C:/Users/Alberto/Documents/itn100results/mixed250_i1/fish", 
+setwd("C:/Users/Alberto/Documents/itn100results/mixed250_i3/fish")
+list6<-list.files("C:/Users/Alberto/Documents/itn100results/mixed250_i3/fish", 
                   recursive=TRUE, pattern=".csv*") # lists all the file (might need to change to .csv)
 length.list6<-length(list6)
 read.special<-function(x) {
@@ -216,6 +216,9 @@ sdev6 <- eventWriter(sdev6)
 allData <- data.frame(total1, total2[,2], total3[,2], total4[,2], total5[,2], total6[,2])
 allData1 <- allData[c(1:(nrow(allData)-2)),]
 colnames(allData1) <- c("Event", "U", "S500", "C", "M500", "S250", "M250")
+
+# write.table(allData1, "C:/Users/Alberto/Documents/itn100results/input/fisheryTables/I3.csv")
+
 allDataMelt <- melt(allData1, id.vars="Event")
 
 allsd <- data.frame(sdev1, sdev2[,2], sdev3[,2], sdev4[,2], sdev5[,2], sdev6[,2])
@@ -234,17 +237,17 @@ limits6 <- aes(ymax=allData1$M250+allsd1$M250sd, ymin=allData1$M250-allsd1$M250s
 trick<-expression(seq(0,7000,1000))
 
 
-p<-ggplot(subset(allDataMelt, variable=="U" | variable=="S500" | variable=="C"| variable=="M500"| 
+regimesPlot <- ggplot(subset(allDataMelt, variable=="U" | variable=="S500" | variable=="C"| variable=="M500"| 
                          variable=="S250"| variable=="M250"),
           aes(x=Event, y=value, group=variable))+
         geom_line(aes(linetype=variable))+
         geom_point(aes(shape=variable, size=3))+
         scale_shape_manual(values=c(0,17,5,1,2,6))+
-        scale_x_continuous("Years", breaks=seq(1,20,1),
-                           limits=c(0,21), labels=seq(1,20,1), expand=c(0,0))+
-        scale_y_continuous("Catch (kg)", limits=c(0,7000000),
+        scale_x_continuous("Years", breaks=seq(0,20,2),
+                           limits=c(0,21), labels=seq(0,20,2), expand=c(0,0))+
+        scale_y_continuous("Catch [t]", limits=c(0,7000000),
                            breaks=seq(0,7000000,1000000), 
-                           expand=c(0,0), labels=seq(0,7000,1000))+
+                           expand=c(0,0), labels=c(0:7))+
         #errorbars
         geom_errorbar(limits1, data=subset(allDataMelt, variable=="U"), width=0.3, position="dodge")+
         geom_errorbar(limits2, data=subset(allDataMelt, variable=="S500"), width=0.3, position="dodge")+
@@ -264,11 +267,11 @@ p<-ggplot(subset(allDataMelt, variable=="U" | variable=="S500" | variable=="C"| 
         theme(axis.text.x=element_text(size=12))+
         theme(axis.text.y=element_text(size=12))
 
-p
+regimesPlot
 
 # biomass calculator is missing
 # besides, a barplot would be maybe better for the purpose of representing fisheries
 # maybe even better a cumulative plot
 # CVI still missing, need graphic representation
 
-ggsave("C:/Users/Alberto/Documents/MASTER THESIS/results/R_output/fishery/inter-scenario_I1.pdf", p, useDingbats=FALSE )
+ggsave("C:/Users/Alberto/Documents/LaTeX/latexdirectory/picsWP/regimesI3.pdf", regimesPlot, useDingbats=FALSE ) # set better res pls

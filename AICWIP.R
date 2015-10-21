@@ -68,10 +68,60 @@ plot(ensemble$ln_length, ensemble$ln_freq, xlim=c(0, 12), ylim=c(0, 15))
 lines(pdatExp$bin, pdatExp$predExp, col="blue")
 dev.off()
 
-est <- coef(summary(fitExp))[,1]
-err <- coef(summary(fitExp))[,2]
+estExp <- coef(summary(fitExp))[,1]
+errExp <- coef(summary(fitExp))[,2]
 
 # 
+
+plot(ensemble$ln_length, ensemble$ln_freq, xlim=c(3, 11), ylim=c(0, 14))
+lines(setLin$bin, setLin$predLin, lty="solid")
+lines(setLinW$bin, setLinW$predLin, lty="dashed")
+lines(pdatQuad$bin, pdatQuad$predQuad, lty="dotted")
+lines(pdatExp$bin, pdatExp$predExp, lty="longdash")
+
+
+
+# ggplot code for this darn plot
+
+# functions to be drawn
+
+lin <- function(ln_length){(estLin[2])*ln_length+estLin[1]}
+linW <- function(ln_length){(estLinW[2])*ln_length+estLinW[1]}
+quad <- function(ln_length){estQuad[3]*ln_length^2+(estQuad[2])*ln_length+estQuad[1]}
+expF <- function(ln_length){exp((estExp[2])*ln_length+estExp[1])}
+
+# real plot
+
+curveChoice <- ggplot(data=ensemble,
+                      aes(x=ln_length, y=ln_freq))+
+        geom_point()+
+        stat_function(data=ensemble, fun= lin, linetype="solid", size=0.5)+
+        stat_function(data=ensemble, fun= linW, linetype="dashed")+
+        stat_function(data=ensemble, fun= quad, linetype="dotted")+
+        stat_function(data=ensemble, fun= expF, linetype="longdash")+
+        scale_x_continuous("log(weight class [20g])", breaks=seq(3,11,1),
+                           limits=c(2.99,11), labels=c(3:11))+
+        scale_y_continuous(name="log(number of individuals)", 
+                           limits=c(0,14),
+                           breaks=seq(0,14,2))+
+        theme(panel.background = element_rect(fill = 'white'))+
+        #theme
+        theme_bw()+
+        theme(panel.grid.minor = element_blank(), 
+              panel.grid.major = element_line(linetype="dashed"))+
+        theme(plot.title = element_text(size=14, vjust=2))+
+        theme(axis.title.x = element_text(size=12,vjust=-0.5),
+              axis.title.y = element_text(size=12,vjust=0.5))+
+        theme(axis.text.x=element_text(size=12))+
+        theme(axis.text.y=element_text(size=12))
+        
+curveChoice
+
+ggsave("C:/Users/Alberto/Documents/LaTeX/latexdirectory/picsWP/sizeSpectrumChoice.pdf", curveChoice, useDingbats=FALSE ) # set better res pls
+
+
+
+
 
 
 # functions of the extreme lines

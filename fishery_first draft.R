@@ -3,8 +3,8 @@
 
 library(ggplot2)
 library(reshape)
-setwd("C:/Users/Alberto/Documents/itn100results/size250_i3/fish")
-list<-list.files("C:/Users/Alberto/Documents/itn100results/size250_i3/fish", 
+setwd("C:/Users/Alberto/Documents/itn100results/mixed250_i3/fish")
+list<-list.files("C:/Users/Alberto/Documents/itn100results/mixed250_i3/fish", 
                  recursive=TRUE, pattern=".csv*") # lists all the file (might need to change to .csv)
 length.list<-length(list)
 read.special<-function(x) {
@@ -61,8 +61,8 @@ p<-ggplot(subset(meltAll,variable=="Smallpelagic" | variable=="Mediumpelagic" |
         geom_area(aes(fill=variable), position='stack', alpha=0.65)+ 
         labs(x="Years", 
              y="Catch [t]")+
-        scale_x_continuous("Years", breaks=c(1,5,10,15,20),
-                           limits=c(0,21), labels=c(1,5,10,15,20), expand=c(0,0))+
+        scale_x_continuous("Years", breaks=seq(0,20,2),
+                           limits=c(0,21), labels=seq(0,20,2), expand=c(0,0))+
         scale_y_continuous(limits=c(0,7000000),
                            breaks=seq(0,7000000,500000), 
                            expand=c(0,0), labels=seq(0,7,0.5))+
@@ -85,5 +85,5 @@ p<-ggplot(subset(meltAll,variable=="Smallpelagic" | variable=="Mediumpelagic" |
         theme(axis.text.y=element_text(size=12))
 p
 
+ggsave("C:/Users/Alberto/Documents/LaTeX/latexdirectory/picsWP/areaChartM250_I3.pdf", p, useDingbats=FALSE ) # set better res pls
 
-ggsave("C:/Users/Alberto/Desktop/youmares/poster/graphs/S250_I3.pdf", p, useDingbats=FALSE)
