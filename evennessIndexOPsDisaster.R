@@ -8,8 +8,10 @@
 # then calculate id
 # needs as input the "total.n" files.
 
-setwd("C:/Users/Alberto/Documents/itn100results/class_i3/tot") # points the folder with the batch output
-list<-list.files("C:/Users/Alberto/Documents/itn100results/class_i3/tot", 
+# this thing needs to be batched for all the scenarios
+
+setwd("C:/Users/Alberto/Documents/itn100results/mixed250_i3/tot") # points the folder with the batch output
+list<-list.files("C:/Users/Alberto/Documents/itn100results/mixed250_i3/tot", 
                  recursive=TRUE, pattern="*.csv") # lists all the file (might need to change to .csv)
 length.list<-length(list)
 read.special<-function(x) {
@@ -37,11 +39,14 @@ evenness_index <- function(data) { # function to be applied to every element of 
         return(id)
 }
 ids <- sapply(meanList, evenness_index) # applies the function to the list and returns a vector of indices
+write.csv(ids, "C:/Users/Alberto/Documents/itn100results/input/boxplotInputNew/mixed250_i3.csv")
 
-ids_scenario <- (c(mean(ids), sd(ids))) # returns mean and sd of the index across all the simulations
-ids_scenario <- data.frame(ids_scenario[1], ids_scenario[2])
-colnames(ids_scenario) <- c("Mean Evenness Index", "Standard deviation Evenness Index")
-ids_scenario
+
+
+#ids_scenario <- (c(mean(ids), sd(ids))) # returns mean and sd of the index across all the simulations
+#ids_scenario <- data.frame(ids_scenario[1], ids_scenario[2])
+#colnames(ids_scenario) <- c("Mean Evenness Index", "Standard deviation Evenness Index")
+#ids_scenario
 #write.csv(ids_scenario, "evenness_scenario.csv")
 
 # APPROVED and DOUBLECHECKED yeah good job you shithead, lucky that the pattern should stay the same 

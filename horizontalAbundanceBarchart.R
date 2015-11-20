@@ -68,17 +68,16 @@ newPlot # hahaha nailed it kek
 # smaller fish larger scale
 
 smallFish <- ggplot(data=subset(cleanData, variable=="Smallpelagic" | variable=="Smalldemersal"), 
-                    aes(x=Regime, y=value, fill=variable))+
-        geom_bar(position=dodge, stat="identity")+
+                    aes(x=Regime, y=value))+
+        geom_bar(position=dodge, stat="identity", width=.5)+
         geom_errorbar(aes(ymin=value,ymax=value+sd),
                       position=dodge, width=0.1, size=0.3)+
         scale_x_discrete(name="Fishing regime")+
         scale_y_continuous(limits=c(0,250000),
                            breaks=seq(0,250000,50000), 
-                           expand=c(0,0), labels=seq(0,250000,50000), "Abundance [individuals]")+
+                           expand=c(0,0), labels=seq(0,250,50), "Abundance [individuals]")+
         scale_fill_manual(name="Functional groups",
-                          values=c("#377EB8", "#FF7F00"),
-                          labels=c("Small pelagic", "Small demersal"))+
+                          values=c("black", "black"))+
         
         coord_flip()+
         theme(panel.background = element_rect(fill = 'white'))+
@@ -102,17 +101,16 @@ ggsave("C:/Users/Alberto/Documents/LaTeX/latexdirectory/picsWP/horizontal/horizo
 # larger fish smaller scale
 
 mediumFish <- ggplot(data=subset(cleanData, variable=="Mediumpelagic" | variable=="Mediumdemersal"), 
-                    aes(x=Regime, y=value, fill=variable))+
-        geom_bar(position=dodge, stat="identity")+
+                    aes(x=Regime, y=value))+
+        geom_bar(position=dodge, stat="identity", width=.5)+
         geom_errorbar(aes(ymin=value,ymax=value+sd),
                       position=dodge, width=0.1, size=0.3)+
         scale_x_discrete(name="Fishing regime")+
         scale_y_continuous(limits=c(0,10000),
                            breaks=seq(0,10000,1000), 
-                           expand=c(0,0), labels=seq(0,10000,1000), "Abundance [individuals]")+
+                           expand=c(0,0), labels=seq(0,10,1), "Abundance [individuals]")+
         scale_fill_manual(name="Functional groups",
-                          values=c("#E41A1C", "#984EA3"),
-                          labels=c("Medium pelagic", "Medium demersal"))+
+                          values=c("black", "black"))+
         
         coord_flip()+
         theme(panel.background = element_rect(fill = 'white'))+
@@ -135,17 +133,16 @@ ggsave("C:/Users/Alberto/Documents/LaTeX/latexdirectory/picsWP/horizontal/horizo
 
 largeFish <- ggplot(data=subset(cleanData, variable=="Largepelagic" | variable=="Largedemersal" |
                                         variable=="Toppiscivores"), 
-                     aes(x=Regime, y=value, fill=variable))+
-        geom_bar(position=dodge, stat="identity")+
+                     aes(x=Regime, y=value))+
+        geom_bar(position=dodge, stat="identity", width=.5)+
         geom_errorbar(aes(ymin=value,ymax=value+sd),
                       position=dodge, width=0.1, size=0.3)+
         scale_x_discrete(name="Fishing regime")+
         scale_y_continuous(limits=c(0,1000),
-                           breaks=seq(0,1000,200), 
-                           expand=c(0,0), labels=seq(0,1000,200), "Abundance [individuals]")+
+                           breaks=seq(0,1000,250), 
+                           expand=c(0,0), labels=seq(0,1,0.25), "Abundance [individuals]")+
         scale_fill_manual(name="Functional groups",
-                          values=c("#4DAF4A", "#999999","#F781BF"),
-                          labels=c("Large pelagic", "Large demersals", "Top carnivores"))+
+                          values=rep("black", 3))+
         
         coord_flip()+
         theme(panel.background = element_rect(fill = 'white'))+

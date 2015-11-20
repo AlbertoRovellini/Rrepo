@@ -34,18 +34,15 @@ rownames(cleanData)<-1:nrow(cleanData)
 cleanData[,1] = factor(cleanData[,1],levels(cleanData[,1])[c(length(cleanData[,1]):1)])
 
 
-newPlot <- ggplot(data=cleanData, aes(x=Regime, y=value, fill=variable))+
-        geom_bar(position=dodge, stat="identity")+
+newPlot <- ggplot(data=cleanData, aes(x=Regime, y=value, fill="black"))+
+        geom_bar(position=dodge, stat="identity", width=.4)+
         geom_errorbar(aes(ymin=value,ymax=value+sd),
                       position=dodge, width=0.1, size=0.3)+
         scale_x_discrete(name="Fishing regime")+
         scale_y_continuous(limits=c(0,40),
                            breaks=seq(0,40,5), 
                            expand=c(0,0), labels=seq(0,40,5), "Community biomass [t]")+
-        scale_fill_manual(name="Functional groups",
-                          values=c("#377EB8", "#E41A1C", "#4DAF4A","#FF7F00","#984EA3","#999999","#F781BF"),
-                          labels=c("Small pelagic", "Medium pelagic", "Large pelagic", "Small demersal",
-                                   "Medium demersal", "Large demersals", "Top carnivores"))+
+        scale_fill_manual(values=rep("black", 7))+
         
         coord_flip()+
         theme(panel.background = element_rect(fill = 'white'))+
@@ -53,23 +50,26 @@ newPlot <- ggplot(data=cleanData, aes(x=Regime, y=value, fill=variable))+
         theme_bw()+
         theme(panel.grid.minor = element_blank(), 
               panel.grid.major = element_line(linetype="dashed"))+
-        theme(axis.title.x = element_text(size=12,vjust=0.5),
-              axis.title.y = element_text(size=12,vjust=0.5))+
-        theme(legend.title = element_text(size=12))+
-        theme(axis.text.x=element_text(size=12,vjust=0.5))+
-        theme(axis.text.y=element_text(size=12))+
-        facet_grid(. ~ variable)
+        theme(axis.title.x = element_text(size=6,vjust=0.5),
+              axis.title.y = element_text(size=6,vjust=0.5))+
+        theme(legend.title = element_text(size=6))+
+        theme(axis.text.x=element_text(size=6,vjust=0.5))+
+        theme(axis.text.y=element_text(size=6))+
+        facet_grid(variable ~ ., scales="free")
 
 
-newPlot # hahaha nailed it kek
+newPlot 
+
+ggsave("C:/Users/Alberto/Documents/LaTeX/latexdirectory/picsWP/horizontalBiomass.pdf", newPlot, 
+       useDingbats=FALSE, units="cm", height = 24, width=16) # set better res pls
 
 # please draw two separate facets because this one is correct but not informative
 
 # smaller fish larger scale
 
 smallFish <- ggplot(data=subset(cleanData, variable=="Smallpelagic" | variable=="Smalldemersal"), 
-                  aes(x=Regime, y=value, fill=variable))+
-        geom_bar(position=dodge, stat="identity")+
+                  aes(x=Regime, y=value))+
+        geom_bar(position=dodge, stat="identity", width=.5)+
         geom_errorbar(aes(ymin=value,ymax=value+sd),
                       position=dodge, width=0.1, size=0.3)+
         scale_x_discrete(name="Fishing regime")+
@@ -77,8 +77,7 @@ smallFish <- ggplot(data=subset(cleanData, variable=="Smallpelagic" | variable==
                            breaks=seq(0,40,5), 
                            expand=c(0,0), labels=seq(0,40,5), "Community biomass [t]")+
         scale_fill_manual(name="Functional groups",
-                          values=c("#377EB8", "#FF7F00"),
-                          labels=c("Small pelagic", "Small demersal"))+
+                          values=c("black", "black"))+
         
         coord_flip()+
         theme(panel.background = element_rect(fill = 'white'))+
@@ -94,15 +93,15 @@ smallFish <- ggplot(data=subset(cleanData, variable=="Smallpelagic" | variable==
         facet_grid(. ~ variable)
 
 
-smallFish # hahaha nailed it kek
+smallFish 
 
 ggsave("C:/Users/Alberto/Documents/LaTeX/latexdirectory/picsWP/horizontalSmall.pdf", smallFish, useDingbats=FALSE ) # set better res pls
 
-# larger fish smaller scale
+# medium fish
 
-largeFish <- ggplot(data=subset(cleanData, variable!="Smallpelagic" & variable!="Smalldemersal"), 
-                    aes(x=Regime, y=value, fill=variable))+
-        geom_bar(position=dodge, stat="identity")+
+mediumFish <- ggplot(data=subset(cleanData, variable=="Mediumpelagic" | variable=="Mediumdemersal"), 
+                    aes(x=Regime, y=value))+
+        geom_bar(position=dodge, stat="identity", width=.5)+
         geom_errorbar(aes(ymin=value,ymax=value+sd),
                       position=dodge, width=0.1, size=0.3)+
         scale_x_discrete(name="Fishing regime")+
@@ -110,9 +109,7 @@ largeFish <- ggplot(data=subset(cleanData, variable!="Smallpelagic" & variable!=
                            breaks=seq(0,10,2), 
                            expand=c(0,0), labels=seq(0,10,2), "Community biomass [t]")+
         scale_fill_manual(name="Functional groups",
-                          values=c("#E41A1C", "#4DAF4A","#984EA3","#999999","#F781BF"),
-                          labels=c("Medium pelagic", "Large pelagic", "Medium demersal", 
-                                   "Large demersals", "Top carnivores"))+
+                          values=c("black", "black"))+
         
         coord_flip()+
         theme(panel.background = element_rect(fill = 'white'))+
@@ -128,7 +125,40 @@ largeFish <- ggplot(data=subset(cleanData, variable!="Smallpelagic" & variable!=
         facet_grid(. ~ variable)
 
 
-largeFish # hahaha nailed it kek
+mediumFish 
+
+ggsave("C:/Users/Alberto/Documents/LaTeX/latexdirectory/picsWP/horizontalMedium.pdf", mediumFish, useDingbats=FALSE ) # set better res pls
+
+# larger fish smaller scale
+
+largeFish <- ggplot(data=subset(cleanData, variable=="Largepelagic" | variable=="Largedemersal" |
+                                        variable=="Toppiscivores"), 
+                    aes(x=Regime, y=value))+
+        geom_bar(position=dodge, stat="identity", width=.5)+
+        geom_errorbar(aes(ymin=value,ymax=value+sd),
+                      position=dodge, width=0.1, size=0.3)+
+        scale_x_discrete(name="Fishing regime")+
+        scale_y_continuous(limits=c(0,10),
+                           breaks=seq(0,10,2), 
+                           expand=c(0,0), labels=seq(0,10,2), "Community biomass [t]")+
+        scale_fill_manual(name="Functional groups",
+                          values=rep("black", 3))+
+        
+        coord_flip()+
+        theme(panel.background = element_rect(fill = 'white'))+
+        #theme
+        theme_bw()+
+        theme(panel.grid.minor = element_blank(), 
+              panel.grid.major = element_line(linetype="dashed"))+
+        theme(axis.title.x = element_text(size=12,vjust=0.5),
+              axis.title.y = element_text(size=12,vjust=0.5))+
+        theme(legend.title = element_text(size=12))+
+        theme(axis.text.x=element_text(size=12,vjust=0.5))+
+        theme(axis.text.y=element_text(size=12))+
+        facet_grid(. ~ variable)
+
+
+largeFish 
 
 ggsave("C:/Users/Alberto/Documents/LaTeX/latexdirectory/picsWP/horizontalLarge.pdf", largeFish, useDingbats=FALSE ) # set better res pls
 

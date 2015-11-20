@@ -124,20 +124,17 @@ int20
 
 # 50%
 
-int50 <- ggplot(data=subset(meltAllDataMod, intensity=="0" | intensity=="3"), 
-                aes(x=Regime, y=value, fill=variable))+
-        geom_bar(position=dodge, stat="identity")+
-        geom_errorbar(aes(ymin=value-sd,ymax=value+sd),
+maxInt <- subset(meltAllDataMod, intensity=="0" | intensity=="3")
+
+int50 <- ggplot(data=maxInt, aes(x=variable, y=value))+
+        geom_bar(position=dodge, stat="identity", width=0.7)+
+        geom_errorbar(aes(ymin=value,ymax=value+sd),
                       position=dodge, width=0.1, size=0.3)+
-        scale_x_discrete(name="Fishing regime")+
-        scale_y_continuous(limits=c(0,50),
-                           breaks=seq(0,50,5), 
-                           expand=c(0,0), labels=seq(0,50,5), "Community biomass [t]")+
-        scale_fill_manual(name="Functional groups",
-                          values=c("#377EB8", "#E41A1C", "#4DAF4A","#FF7F00","#984EA3","#999999","#F781BF"),
-                          labels=c("Small pelagic", "Medium pelagic", "Large pelagic", "Small demersal",
-                                   "Medium demersal", "Large demersals", "Top carnivores"))+
-        
+        scale_x_discrete(name="Functional groups",
+                         labels=c(1:7))+
+        scale_y_continuous(limits=c(0,40),
+                           breaks=seq(0,40,5), 
+                           expand=c(0,0), labels=seq(0,40,5), "Community biomass [t]")+
         #coord_trans(y="log10")+
         theme(panel.background = element_rect(fill = 'white'))+
         #theme
@@ -147,11 +144,15 @@ int50 <- ggplot(data=subset(meltAllDataMod, intensity=="0" | intensity=="3"),
         theme(axis.title.x = element_text(size=12,vjust=0.5),
               axis.title.y = element_text(size=12,vjust=0.5))+
         theme(legend.title = element_text(size=12))+
-        theme(axis.text.x=element_text(size=12,angle=45,vjust=0.5))+
-        theme(axis.text.y=element_text(size=12))
+        theme(axis.text.x=element_text(size=12,vjust=0.5))+
+        theme(axis.text.y=element_text(size=12))+
+        facet_grid(. ~ Regime)
 
 
 int50 
+
+ggsave("C:/Users/Alberto/Documents/LaTeX/latexdirectory/picsWP/lastPlot.pdf", int50, useDingbats=FALSE ) # set better res pls
+
 
 ############################### total analysis because why not #############################
 

@@ -295,5 +295,38 @@ totPlot50 <- ggplot(data=subset(meltAllDataTot, intensity=="0" | intensity=="3")
 
 totPlot50
 
+#############################
+
+
+
+maxInt <- subset(meltAllDataMod, intensity=="0" | intensity=="3")
+maxInt$cheat <- maxInt$value+1
+
+int50 <- ggplot(data=maxInt, aes(x=variable, y=cheat))+
+        geom_bar(position=dodge, stat="identity", width=0.7)+
+        geom_errorbar(aes(ymin=cheat,ymax=cheat+sd),
+                      position=dodge, width=0.1, size=0.2)+
+        scale_x_discrete(name="Functional groups",
+                         labels=c(1:7))+
+        scale_y_log10(limits=c(1,300000), expand=c(0,1),
+                      breaks=c(10,100,1000,10000,100000),
+                      "Community abundance [individuals]")+
+        #coord_trans(y="log10")+
+        theme(panel.background = element_rect(fill = 'white'))+
+        #theme
+        theme_bw()+
+        theme(panel.grid.minor = element_blank(), 
+              panel.grid.major = element_line(linetype="dashed"))+
+        theme(axis.title.x = element_text(size=12,vjust=0.5),
+              axis.title.y = element_text(size=12,vjust=0.5))+
+        theme(legend.title = element_text(size=12))+
+        theme(axis.text.x=element_text(size=12,vjust=0.5))+
+        theme(axis.text.y=element_text(size=12))+
+        facet_grid(. ~ Regime)
+
+
+int50 
+
+ggsave("C:/Users/Alberto/Documents/LaTeX/latexdirectory/picsWP/lastPlotA.pdf", int50, useDingbats=FALSE ) # set better res pls
 
 

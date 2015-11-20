@@ -1,9 +1,6 @@
-# # Written by Alberto Rovellini, 28/04/2015, ZMT Bremen, DE
-# e-mail: alberto.rovellini@zmt-bremen.de
+# # Written by Alberto Rovellini, 12/10/2015, ZMT Bremen, DE
+# e-mail: alberto.rovellini@leibniz-zmt.de
 
-# this is a script to average the pupolation abundances over different runs of the same batch of simulations,
-# calculate their standard deviation and plot them with the error.
-# needs as input the "total.n" files.
 
 setwd("C:/Users/Alberto/Documents/itn100results/resultsBase/tot/half")
 library(abind)
@@ -45,7 +42,7 @@ colnames(complete) <- c("time", "class", "mean", "sd")
 
 ribbonAbundance <- ggplot(complete, aes(x=time, y=mean, color=class))+
         geom_line(aes(color=class))+
-        #geom_ribbon(aes(ymin=mean-sd, ymax=mean+sd, color=class), alpha=0.5)+
+        geom_ribbon(aes(ymin=mean-sd, ymax=mean+sd, color=class), alpha=0.5)+
         labs(#title = "Population dynamics of the community", 
                 x="Time steps", 
                 y="Abundance [individuals]")+
